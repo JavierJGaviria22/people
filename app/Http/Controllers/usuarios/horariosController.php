@@ -77,6 +77,11 @@ class horariosController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'empleado' => 'required|array|max:3',
+            'empleado.*' => 'exists:empleados,id_empleado',
+        ]);
+
         if (isset(auth('g_usuarios')->user()->id_empleado)) {
             $id_empleado2 = auth('g_usuarios')->user()->id_empleado;
             $id_empresa = auth('g_usuarios')->user()->empleado->administradores->id_empresa;
@@ -88,7 +93,7 @@ class horariosController extends Controller
             })
                 ->pluck('id_empleado')->toArray();
             $request->validate([
-                'empleado' => ['required', 'in:' . implode(',', $empleadosPermitidos)],
+                'empleado.*' => ['in:' . implode(',', $empleadosPermitidos)],
                 'fecha_inicio' => 'required|date',
                 'fecha_fin' => 'required|date|after_or_equal:fecha_inicio',
 
@@ -115,10 +120,12 @@ class horariosController extends Controller
 
         $id_empresa = $id_empresa;
         $id_empleado = $request->input('empleado');
-        $nombre_empleado = Empleados::where('id_empleado', $id_empleado)->first();
+        $nombre_empleado = Empleados::whereIn('id_empleado', $id_empleado)->get();
         $fecha_inicio = Carbon::parse($request->input('fecha_inicio'));
         $intervalo = $fecha_fin->diff($fecha_inicio);
         $metodo = $request->input('accion');
+
+        // dd($nombre_empleado[1]->nombre);
 
         if (isset(auth('g_usuarios')->user()->id_empleado)) {
             if ($metodo == 'Nuevo') {

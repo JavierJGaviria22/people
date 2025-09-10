@@ -5,35 +5,37 @@
 <?php $__env->startSection('content'); ?>
 <!-- Titulo de pagina -->
 <div class="pagetitle">
-    <h1>Editar Horario</h1>
+    <h1>Crear Horario</h1>
     <nav>
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="<?php echo e(route('/')); ?>">Inicio</a></li>
             <li class="breadcrumb-item"><a href="<?php echo e(route('mis-permisos')); ?>">Horarios</a></li>
-            <li class="breadcrumb-item"><a href="<?php echo e(route('nuevo-permiso')); ?>">Editar Horario</a></li>
+            <li class="breadcrumb-item"><a href="<?php echo e(route('nuevo-permiso')); ?>">Crear Horario</a></li>
         </ol>
     </nav>
 </div> <!-- Fin titulo de pagina -->
 
+<?php $j = 0; ?>
 <section class="section">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
+        <div class="col-lg-10 d-flex gap-4" style="width: 100%;">
+            <?php $__currentLoopData = $id_empleado; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $emp): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="card">
                 <div class="card-body ">
-                    <form action="<?php echo e(route('horarios.actualizar')); ?>" method="POST">
+                    <form action="<?php echo e(route('horarios.crear')); ?>" method="POST">
                         <?php echo csrf_field(); ?>
                         <div class=" d-flex align-items-baseline justify-content-between mt-3">
-                            <h5 class="card-title">Horario para editar a <strong> <?php echo e($nombre_empleado->nombre); ?> <?php echo e($nombre_empleado->apellido); ?></strong></h5>
+                            <h5 class="card-title">Horario para asignar a <strong> <?php echo e($nombre_empleado[$j]->nombre); ?> <?php echo e($nombre_empleado[$j]->apellido); ?></strong></h5>
                             <div class="d-flex gap-2 align-items-baseline justify-content-end">
                                 <h6 class="card-title"><strong>Total a Trabajar:</strong></h4>
                                     <!-- <span class="card-title" id="totalSumado">0</span> -->
                                     <input name="totalFinal" class="form-control" style="width: 18%;" id="totalSumado" required readonly>
-                                    <input type="hidden" name="intervalo" value="<?php echo e($intervalo); ?>" required>
-                                    <input type="hidden" name="id_empleado" value="<?php echo e($nombre_empleado->id_empleado); ?>" required>
+                                    <input type="hidden" name="intervalo" value="<?php echo e($intervalo->days); ?>" required>
+                                    <input type="hidden" name="id_empleado" value="<?php echo e($nombre_empleado[$j]->id_empleado); ?>" required>
                             </div>
                         </div>
                         <div class="col-sm-12 mb-4 d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary">Actualizar</button>
+                            <button type="submit" class="btn btn-primary">Asignar</button>
                         </div>
 
                         <?php if($errors->any()): ?>
@@ -68,43 +70,43 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                 <?php $i=0; ?>
-                                    <?php $__currentLoopData = $horarios; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $horario): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                    
+                                    <?php for($i = 0; $i <= $intervalo->days; $i++): ?>
                                         <tr>
-                                            <td class="text-center"><?php echo e(\Carbon\Carbon::parse($horario->fecha_h)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY')); ?></td>
-                                            <input type="hidden" name="fecha<?php echo e($i); ?>" value="<?php echo e(\Carbon\Carbon::parse($horario->fecha_h)); ?>" required>
-                                            <td class="text-center"><input name="entrada<?php echo e($i); ?>" class="form-control hora1" type="time" id="hora" value="<?php echo e($horario->entrada_h); ?>" required <?php echo e($horario->id_permiso == null || $horario->id_permiso == 6 ? '' : 'disabled'); ?>></td>
-                                            <td class="text-center"><input name="salida<?php echo e($i); ?>" class="form-control hora2" type="time" id="hora2" value="<?php echo e($horario->salida_h); ?>" required <?php echo e($horario->id_permiso == null || $horario->id_permiso == 6 ? '' : 'disabled'); ?>></td>
-                                            <td class="text-center"><input name="lunch<?php echo e($i); ?>" class="form-control lunch" type="number" id="cantidad" name="cantidad" min="0" step="any" value="<?php echo e($horario->tiempo_fuera); ?>" required <?php echo e($horario->id_permiso == null || $horario->id_permiso == 6 ? '' : 'disabled'); ?>></td>
-                                            <td class="text-center"> <select style="width: auto;" id="sede" name="sede<?php echo e($i); ?>" class="form-select" aria-label="Default select example" required <?php echo e($horario->id_permiso == null || $horario->id_permiso == 6 ? '' : 'disabled'); ?>>
-                                                    <option value="" <?php echo e($horario->id_sede == null ? 'selected' : ''); ?> disabled>Seleccionar</option>
+                                            <td class="text-center"><?php echo e(\Carbon\Carbon::parse($fecha_inicio)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY')); ?></td>
+                                            <input type="hidden" name="fecha<?php echo e($i); ?>" value="<?php echo e(\Carbon\Carbon::parse($fecha_inicio)); ?>" required>
+                                            <td class="text-center"><input name="entrada<?php echo e($i); ?>" class="form-control hora1" type="time" id="hora" required></td>
+                                            <td class="text-center"><input name="salida<?php echo e($i); ?>" class="form-control hora2" type="time" id="hora2" required></td>
+                                            <td class="text-center"><input name="lunch<?php echo e($i); ?>" class="form-control lunch" type="number" id="cantidad" name="cantidad" min="0" step="any" required></td>
+                                            <td class="text-center"> <select style="width: auto;" id="sede" name="sede<?php echo e($i); ?>" class="form-select" aria-label="Default select example" required>
+                                                    <option value="" <?php echo e(old('sede') ? '' : 'selected'); ?> disabled>Seleccionar</option>
                                                     <?php $__currentLoopData = $sedes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sede): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                    <option value="<?php echo e($sede->id_sede); ?>" <?php echo e($horario->id_sede == $sede->id_sede ? 'selected' : ''); ?>>
+                                                    <option value="<?php echo e($sede->id_sede); ?>" <?php echo e(old('sede') == $sede->id_sede ? 'selected' : ''); ?>>
                                                         <?php echo e($sede->nombre); ?>
 
                                                     </option>
                                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </select></td>
-                                            <td class="text-center"><input name="total<?php echo e($i); ?>" class="form-control resultado" id="resultado" value="<?php echo e($horario->total); ?>" required readonly <?php echo e($horario->id_permiso == null || $horario->id_permiso == 6 ? '' : 'disabled'); ?>></td>
+                                            <td class="text-center"><input name="total<?php echo e($i); ?>" class="form-control resultado" id="resultado" required readonly></td>
                                             <td class="text-center"><select style="width: auto;" id="novedad" name="novedad<?php echo e($i); ?>" class="form-select" aria-label="Default select example">
-                                                    <option value="" <?php echo e($horario->id_permiso ? '' : 'selected'); ?>>Sin Novedad</option>
+                                                    <option value="" <?php echo e(old('novedad') ? '' : 'selected'); ?>>Sin Novedad</option>
                                                     <?php $__currentLoopData = $novedades; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $novedad): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                                    <option value="<?php echo e($novedad->id_tipo_permiso); ?>" <?php echo e($horario->id_permiso == $novedad->id_tipo_permiso ? 'selected' : ''); ?>>
+                                                    <option value="<?php echo e($novedad->id_tipo_permiso); ?>" <?php echo e(old('novedad') == $novedad->id_tipo_permiso ? 'selected' : ''); ?>>
                                                         <?php echo e($novedad->permiso); ?>
 
                                                     </option>
                                                     <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </select></td>
                                         </tr>
-                                        <?php $i++; ?>
-                                        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                        <?php $fecha_inicio = $fecha_inicio->modify("+1 day"); ?>
+                                        <?php endfor; ?>
                                 </tbody>
                             </table>
                         </div>
                     </form>
                 </div>
             </div>
+            <?php $j = $j + 1; ?>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </div>
 </section>
@@ -292,4 +294,4 @@
     });
 </script>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('layouts.layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/backup/public_html/people/resources/views/usuarios/editar-horario.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\people\resources\views/usuarios/asignar-horario.blade.php ENDPATH**/ ?>

@@ -44,7 +44,7 @@
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Historial de Permisos</h5>
-                    <p>En la siguiente tabla encontrará todos los horarios creados y asignados a los empleados. Los horarios mostrados aqui tendran una antiguedad de 1 mes como maximo.</p>
+                    <p>En la siguiente tabla encontrará todos los horarios creados y asignados a los empleados de <?php echo e($info_empleados->departamento); ?>. Los horarios mostrados aqui tendran una antiguedad de 1 mes como maximo.</p>
                     <div class="botones d-flex justify-content-center gap-4">
                     
                     <div class="mb-3 text-end">
@@ -90,4 +90,4 @@
   }
 </script>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('layouts.admin-layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/backup/public_html/people/resources/views/admin/horarios.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\people\resources\views/usuarios/horarios.blade.php ENDPATH**/ ?>

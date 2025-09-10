@@ -170,4 +170,4 @@
   <!-- Fin Sesion Dashboard -->
 
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('layouts.admin-layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/backup/public_html/people/resources/views/admin/dashboards.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layouts.admin-layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\people\resources\views/admin/dashboards.blade.php ENDPATH**/ ?>

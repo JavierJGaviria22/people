@@ -1,5 +1,5 @@
 <?php
-$admin = auth('g_administradores')->user();
+    $admin = auth('g_administradores')->user();
 ?>
 
 <!DOCTYPE html>
@@ -59,6 +59,12 @@ $admin = auth('g_administradores')->user();
 
     <!-- Sweet alert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 </head>
 
@@ -135,7 +141,8 @@ $admin = auth('g_administradores')->user();
 
                 <li class="nav-item dropdown pe-3">
 
-                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#"
+                        data-bs-toggle="dropdown">
                         <img src="<?php echo e(asset('assets/img/profile-img.jpg')); ?>" alt="Profile" class="rounded-circle">
                         <span class="d-none d-md-block dropdown-toggle ps-2"><?php echo e($info_admins->nombre_admin); ?></span>
                     </a><!-- End Profile Iamge Icon -->
@@ -193,7 +200,8 @@ $admin = auth('g_administradores')->user();
         <ul class="sidebar-nav" id="sidebar-nav">
             <div style="width: 100%;">
                 <li class="nav-item">
-                    <a class="nav-link <?php echo e(Route::currentRouteName() === '/admin' ? '' : 'collapsed'); ?>" href="<?php echo e(route('/admin')); ?>">
+                    <a class="nav-link <?php echo e(Route::currentRouteName() === '/admin' ? '' : 'collapsed'); ?>"
+                        href="<?php echo e(route('/admin')); ?>">
                         <i class="bi bi-grid"></i>
                         <span>Dashboard</span>
                     </a>
@@ -201,12 +209,17 @@ $admin = auth('g_administradores')->user();
 
                 <!-- Start Gestion de Asistencia Nav -->
                 <li class="nav-item">
-                    <a class="nav-link <?php echo e(Route::currentRouteName() === 'nomina.index' ? '' : 'collapsed'); ?>" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-clock"></i><span>Gestion de Nomina</span><i class="bi bi-chevron-down ms-auto"></i>
+                    <a class="nav-link <?php echo e(Route::currentRouteName() === 'nomina.index' ? '' : 'collapsed'); ?>"
+                        data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-clock"></i><span>Gestion de Nomina</span><i
+                            class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="icons-nav" class="nav-content <?php echo e(Route::currentRouteName() === 'nomina.index' || Route::currentRouteName() === 'vacaciones' ? '' : 'collapse'); ?> " data-bs-parent="#sidebar-nav">
+                    <ul id="icons-nav"
+                        class="nav-content <?php echo e(Route::currentRouteName() === 'nomina.index' || Route::currentRouteName() === 'vacaciones' ? '' : 'collapse'); ?> "
+                        data-bs-parent="#sidebar-nav">
                         <li>
-                            <a class="<?php echo e(Route::currentRouteName() === 'nomina.index' ? 'active' : ''); ?>" href="<?php echo e(route('nomina.index')); ?>">
+                            <a class="<?php echo e(Route::currentRouteName() === 'nomina.index' ? 'active' : ''); ?>"
+                                href="<?php echo e(route('nomina.index')); ?>">
                                 <i class="bi bi-circle"></i><span>Corregir Inconsistencias</span>
                             </a>
                         </li>
@@ -220,7 +233,8 @@ $admin = auth('g_administradores')->user();
 
 
                 <li class="nav-item">
-                    <a class="nav-link <?php echo e((Route::currentRouteName() === 'contratos.index' | Route::currentRouteName() === 'contratos.create' | Route::currentRouteName() === 'contratos.edit') ? '' : 'collapsed'); ?>" href="<?php echo e(route('contratos.index')); ?>">
+                    <a class="nav-link <?php echo e((Route::currentRouteName() === 'contratos.index') | (Route::currentRouteName() === 'contratos.create') | (Route::currentRouteName() === 'contratos.edit') ? '' : 'collapsed'); ?>"
+                        href="<?php echo e(route('contratos.index')); ?>">
                         <i class="bi bi-file-earmark-check"></i>
                         <span> Gestion de Contratos </span>
                     </a>
@@ -228,7 +242,8 @@ $admin = auth('g_administradores')->user();
 
 
                 <li class="nav-item">
-                    <a class="nav-link <?php echo e((Route::currentRouteName() === 'empleados' | Route::currentRouteName() === 'nuevo-empleado' | Route::currentRouteName() === 'editar-empleado') ? '' : 'collapsed'); ?>" href="<?php echo e(route('empleados')); ?>">
+                    <a class="nav-link <?php echo e((Route::currentRouteName() === 'empleados') | (Route::currentRouteName() === 'nuevo-empleado') | (Route::currentRouteName() === 'editar-empleado') ? '' : 'collapsed'); ?>"
+                        href="<?php echo e(route('empleados')); ?>">
                         <i class="bi bi-person-workspace"></i>
                         <span> Gestion de Empleados </span>
                     </a>
@@ -236,21 +251,24 @@ $admin = auth('g_administradores')->user();
 
 
                 <li class="nav-item">
-                    <a class="nav-link <?php echo e((Route::currentRouteName() === 'noticias.index' | Route::currentRouteName() === 'noticias.create' | Route::currentRouteName() === 'noticias.edit') ? '' : 'collapsed'); ?>" href="<?php echo e(route('noticias.index')); ?>">
+                    <a class="nav-link <?php echo e((Route::currentRouteName() === 'noticias.index') | (Route::currentRouteName() === 'noticias.create') | (Route::currentRouteName() === 'noticias.edit') ? '' : 'collapsed'); ?>"
+                        href="<?php echo e(route('noticias.index')); ?>">
                         <i class="bi bi-newspaper"></i>
                         <span> Gestion de Noticias </span>
                     </a>
                 </li><!-- End Gestion de Noticias Nav -->
 
                 <li class="nav-item">
-                    <a class="nav-link <?php echo e(Route::currentRouteName() === 'fichaje' ? '' : 'collapsed'); ?>" href="#">
+                    <a class="nav-link <?php echo e(Route::currentRouteName() === 'fichaje' ? '' : 'collapsed'); ?>"
+                        href="#">
                         <i class="bi bi-file-earmark-text"></i>
                         <span> Gestion de Solicitudes </span>
                     </a>
                 </li><!-- End Gestion de Solicitudes Nav -->
 
                 <li class="nav-item">
-                    <a class="nav-link <?php echo e((Route::currentRouteName() === 'horariosA.index' | Route::currentRouteName() === 'horariosA.create' | Route::currentRouteName() === 'horariosA.edit') ? '' : 'collapsed'); ?>" href="<?php echo e(route('horariosA.index')); ?>">
+                    <a class="nav-link <?php echo e((Route::currentRouteName() === 'horariosA.index') | (Route::currentRouteName() === 'horariosA.create') | (Route::currentRouteName() === 'horariosA.edit') ? '' : 'collapsed'); ?>"
+                        href="<?php echo e(route('horariosA.index')); ?>">
                         <i class="bi bi-file-earmark-text"></i>
                         <span> Gestion de Horarios </span>
                     </a>
@@ -258,27 +276,35 @@ $admin = auth('g_administradores')->user();
 
                 <!-- Start Reportes Nav -->
                 <li class="nav-item">
-                    <a class="nav-link <?php echo e((Route::currentRouteName() === 'reporte-horas.index' || Route::currentRouteName() === 'nomina.audit-log' || Route::currentRouteName() === 'info-pto' || Route::currentRouteName() === 'dashboards') ? '' : 'collapsed'); ?>" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-graph-up"></i><span>Reportes e Informes</span><i class="bi bi-chevron-down ms-auto"></i>
+                    <a class="nav-link <?php echo e(Route::currentRouteName() === 'reporte-horas.index' || Route::currentRouteName() === 'nomina.audit-log' || Route::currentRouteName() === 'info-pto' || Route::currentRouteName() === 'dashboards' ? '' : 'collapsed'); ?>"
+                        data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-graph-up"></i><span>Reportes e Informes</span><i
+                            class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="components-nav" class="nav-content <?php echo e(Route::currentRouteName() === 'dashboards' || Route::currentRouteName() === 'reporte-horas.index' || Route::currentRouteName() === 'nomina.audit-log' ||  Route::currentRouteName() === 'info-pto' ? '' : 'collapse'); ?> " data-bs-parent="#sidebar-nav">
+                    <ul id="components-nav"
+                        class="nav-content <?php echo e(Route::currentRouteName() === 'dashboards' || Route::currentRouteName() === 'reporte-horas.index' || Route::currentRouteName() === 'nomina.audit-log' || Route::currentRouteName() === 'info-pto' ? '' : 'collapse'); ?> "
+                        data-bs-parent="#sidebar-nav">
                         <li>
-                            <a class="<?php echo e(Route::currentRouteName() === 'dashboards' ? 'active' : ''); ?>" href="<?php echo e(route('dashboards')); ?>">
+                            <a class="<?php echo e(Route::currentRouteName() === 'dashboards' ? 'active' : ''); ?>"
+                                href="<?php echo e(route('dashboards')); ?>">
                                 <i class="bi bi-circle"></i><span>Dashboard's</span>
                             </a>
                         </li>
                         <li>
-                            <a class="<?php echo e(Route::currentRouteName() === 'nomina.audit-log' ? 'active' : ''); ?>" href="<?php echo e(route('nomina.audit-log')); ?>">
+                            <a class="<?php echo e(Route::currentRouteName() === 'nomina.audit-log' ? 'active' : ''); ?>"
+                                href="<?php echo e(route('nomina.audit-log')); ?>">
                                 <i class="bi bi-circle"></i><span>Registro de Auditoria</span>
                             </a>
                         </li>
                         <li>
-                            <a class="<?php echo e(Route::currentRouteName() === 'reporte-horas.index' ? 'active' : ''); ?>" href="<?php echo e(route('reporte-horas.index')); ?>">
+                            <a class="<?php echo e(Route::currentRouteName() === 'reporte-horas.index' ? 'active' : ''); ?>"
+                                href="<?php echo e(route('reporte-horas.index')); ?>">
                                 <i class="bi bi-circle"></i><span>Reporte Ponchador</span>
                             </a>
                         </li>
                         <li>
-                            <a class="<?php echo e(Route::currentRouteName() === 'info-pto' ? 'active' : ''); ?>" href="<?php echo e(route('info-pto')); ?>">
+                            <a class="<?php echo e(Route::currentRouteName() === 'info-pto' ? 'active' : ''); ?>"
+                                href="<?php echo e(route('info-pto')); ?>">
                                 <i class="bi bi-circle"></i><span>Informe PTO</span>
                             </a>
                         </li>
@@ -289,7 +315,8 @@ $admin = auth('g_administradores')->user();
 
             <div style="width: 100%;">
                 <li class="nav-item">
-                    <a class="nav-link <?php echo e(Route::currentRouteName() === 'config' ? '' : 'collapsed'); ?>" href="<?php echo e(route('config')); ?>">
+                    <a class="nav-link <?php echo e(Route::currentRouteName() === 'config' ? '' : 'collapsed'); ?>"
+                        href="<?php echo e(route('config')); ?>">
                         <i class="bi bi-gear"></i>
                         <span> Configuración </span>
                     </a>
@@ -333,7 +360,7 @@ $admin = auth('g_administradores')->user();
     <!-- SweetAlert JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    
+
 
 
     <!-- Main JS File -->
@@ -348,7 +375,7 @@ $admin = auth('g_administradores')->user();
     </script>
 
 
-
 </body>
 
-</html><?php /**PATH /home/backup/public_html/people/resources/views/layouts/admin-layout.blade.php ENDPATH**/ ?>
+</html>
+<?php /**PATH C:\laragon\www\people\resources\views/layouts/admin-layout.blade.php ENDPATH**/ ?>

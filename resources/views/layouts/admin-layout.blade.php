@@ -1,5 +1,5 @@
 @php
-$admin = auth('g_administradores')->user();
+    $admin = auth('g_administradores')->user();
 @endphp
 
 <!DOCTYPE html>
@@ -60,6 +60,12 @@ $admin = auth('g_administradores')->user();
     <!-- Sweet alert -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
 </head>
 
 <body>
@@ -68,9 +74,9 @@ $admin = auth('g_administradores')->user();
     <header id="header" class="header fixed-top d-flex align-items-center">
 
         <div class="d-flex align-items-center justify-content-between">
-            <a href="{{ route('/')}}" class="logo d-flex align-items-center">
+            <a href="{{ route('/') }}" class="logo d-flex align-items-center">
                 <img src="{{ asset('assets/img/logo.png') }}" alt="">
-                <span class="d-none d-lg-block">{{$info_admins->empresa;}}</span>
+                <span class="d-none d-lg-block">{{ $info_admins->empresa }}</span>
             </a>
             <i class="bi bi-list toggle-sidebar-btn"></i>
         </div><!-- End Logo -->
@@ -135,14 +141,15 @@ $admin = auth('g_administradores')->user();
 
                 <li class="nav-item dropdown pe-3">
 
-                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown">
-                        <img src="{{asset('assets/img/profile-img.jpg')}}" alt="Profile" class="rounded-circle">
-                        <span class="d-none d-md-block dropdown-toggle ps-2">{{ $info_admins->nombre_admin; }}</span>
+                    <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#"
+                        data-bs-toggle="dropdown">
+                        <img src="{{ asset('assets/img/profile-img.jpg') }}" alt="Profile" class="rounded-circle">
+                        <span class="d-none d-md-block dropdown-toggle ps-2">{{ $info_admins->nombre_admin }}</span>
                     </a><!-- End Profile Iamge Icon -->
 
                     <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
                         <li class="dropdown-header">
-                            <h6>{{ $info_admins->nombre_admin; }}</h6>
+                            <h6>{{ $info_admins->nombre_admin }}</h6>
                             <span>Administrador</span>
                         </li>
                         <li>
@@ -193,7 +200,8 @@ $admin = auth('g_administradores')->user();
         <ul class="sidebar-nav" id="sidebar-nav">
             <div style="width: 100%;">
                 <li class="nav-item">
-                    <a class="nav-link {{ Route::currentRouteName() === '/admin' ? '' : 'collapsed' }}" href="{{ route('/admin') }}">
+                    <a class="nav-link {{ Route::currentRouteName() === '/admin' ? '' : 'collapsed' }}"
+                        href="{{ route('/admin') }}">
                         <i class="bi bi-grid"></i>
                         <span>Dashboard</span>
                     </a>
@@ -201,12 +209,17 @@ $admin = auth('g_administradores')->user();
 
                 <!-- Start Gestion de Asistencia Nav -->
                 <li class="nav-item">
-                    <a class="nav-link {{ Route::currentRouteName() === 'nomina.index' ? '' : 'collapsed' }}" data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-clock"></i><span>Gestion de Nomina</span><i class="bi bi-chevron-down ms-auto"></i>
+                    <a class="nav-link {{ Route::currentRouteName() === 'nomina.index' ? '' : 'collapsed' }}"
+                        data-bs-target="#icons-nav" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-clock"></i><span>Gestion de Nomina</span><i
+                            class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="icons-nav" class="nav-content {{ Route::currentRouteName() === 'nomina.index' || Route::currentRouteName() === 'vacaciones' ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
+                    <ul id="icons-nav"
+                        class="nav-content {{ Route::currentRouteName() === 'nomina.index' || Route::currentRouteName() === 'vacaciones' ? '' : 'collapse' }} "
+                        data-bs-parent="#sidebar-nav">
                         <li>
-                            <a class="{{ Route::currentRouteName() === 'nomina.index' ? 'active' : '' }}" href="{{ route('nomina.index') }}">
+                            <a class="{{ Route::currentRouteName() === 'nomina.index' ? 'active' : '' }}"
+                                href="{{ route('nomina.index') }}">
                                 <i class="bi bi-circle"></i><span>Corregir Inconsistencias</span>
                             </a>
                         </li>
@@ -220,7 +233,8 @@ $admin = auth('g_administradores')->user();
 
 
                 <li class="nav-item">
-                    <a class="nav-link {{ (Route::currentRouteName() === 'contratos.index' | Route::currentRouteName() === 'contratos.create' | Route::currentRouteName() === 'contratos.edit') ? '' : 'collapsed' }}" href="{{ route('contratos.index') }}">
+                    <a class="nav-link {{ (Route::currentRouteName() === 'contratos.index') | (Route::currentRouteName() === 'contratos.create') | (Route::currentRouteName() === 'contratos.edit') ? '' : 'collapsed' }}"
+                        href="{{ route('contratos.index') }}">
                         <i class="bi bi-file-earmark-check"></i>
                         <span> Gestion de Contratos </span>
                     </a>
@@ -228,7 +242,8 @@ $admin = auth('g_administradores')->user();
 
 
                 <li class="nav-item">
-                    <a class="nav-link {{ (Route::currentRouteName() === 'empleados' | Route::currentRouteName() === 'nuevo-empleado' | Route::currentRouteName() === 'editar-empleado') ? '' : 'collapsed' }}" href="{{route('empleados')}}">
+                    <a class="nav-link {{ (Route::currentRouteName() === 'empleados') | (Route::currentRouteName() === 'nuevo-empleado') | (Route::currentRouteName() === 'editar-empleado') ? '' : 'collapsed' }}"
+                        href="{{ route('empleados') }}">
                         <i class="bi bi-person-workspace"></i>
                         <span> Gestion de Empleados </span>
                     </a>
@@ -236,21 +251,24 @@ $admin = auth('g_administradores')->user();
 
 
                 <li class="nav-item">
-                    <a class="nav-link {{ (Route::currentRouteName() === 'noticias.index' | Route::currentRouteName() === 'noticias.create' | Route::currentRouteName() === 'noticias.edit') ? '' : 'collapsed' }}" href="{{ route('noticias.index') }}">
+                    <a class="nav-link {{ (Route::currentRouteName() === 'noticias.index') | (Route::currentRouteName() === 'noticias.create') | (Route::currentRouteName() === 'noticias.edit') ? '' : 'collapsed' }}"
+                        href="{{ route('noticias.index') }}">
                         <i class="bi bi-newspaper"></i>
                         <span> Gestion de Noticias </span>
                     </a>
                 </li><!-- End Gestion de Noticias Nav -->
 
                 <li class="nav-item">
-                    <a class="nav-link {{ Route::currentRouteName() === 'fichaje' ? '' : 'collapsed' }}" href="#">
+                    <a class="nav-link {{ Route::currentRouteName() === 'fichaje' ? '' : 'collapsed' }}"
+                        href="#">
                         <i class="bi bi-file-earmark-text"></i>
                         <span> Gestion de Solicitudes </span>
                     </a>
                 </li><!-- End Gestion de Solicitudes Nav -->
 
                 <li class="nav-item">
-                    <a class="nav-link {{ (Route::currentRouteName() === 'horariosA.index' | Route::currentRouteName() === 'horariosA.create' | Route::currentRouteName() === 'horariosA.edit') ? '' : 'collapsed' }}" href="{{ route('horariosA.index') }}">
+                    <a class="nav-link {{ (Route::currentRouteName() === 'horariosA.index') | (Route::currentRouteName() === 'horariosA.create') | (Route::currentRouteName() === 'horariosA.edit') ? '' : 'collapsed' }}"
+                        href="{{ route('horariosA.index') }}">
                         <i class="bi bi-file-earmark-text"></i>
                         <span> Gestion de Horarios </span>
                     </a>
@@ -258,27 +276,35 @@ $admin = auth('g_administradores')->user();
 
                 <!-- Start Reportes Nav -->
                 <li class="nav-item">
-                    <a class="nav-link {{ (Route::currentRouteName() === 'reporte-horas.index' || Route::currentRouteName() === 'nomina.audit-log' || Route::currentRouteName() === 'info-pto' || Route::currentRouteName() === 'dashboards') ? '' : 'collapsed' }}" data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
-                        <i class="bi bi-graph-up"></i><span>Reportes e Informes</span><i class="bi bi-chevron-down ms-auto"></i>
+                    <a class="nav-link {{ Route::currentRouteName() === 'reporte-horas.index' || Route::currentRouteName() === 'nomina.audit-log' || Route::currentRouteName() === 'info-pto' || Route::currentRouteName() === 'dashboards' ? '' : 'collapsed' }}"
+                        data-bs-target="#components-nav" data-bs-toggle="collapse" href="#">
+                        <i class="bi bi-graph-up"></i><span>Reportes e Informes</span><i
+                            class="bi bi-chevron-down ms-auto"></i>
                     </a>
-                    <ul id="components-nav" class="nav-content {{ Route::currentRouteName() === 'dashboards' || Route::currentRouteName() === 'reporte-horas.index' || Route::currentRouteName() === 'nomina.audit-log' ||  Route::currentRouteName() === 'info-pto' ? '' : 'collapse' }} " data-bs-parent="#sidebar-nav">
+                    <ul id="components-nav"
+                        class="nav-content {{ Route::currentRouteName() === 'dashboards' || Route::currentRouteName() === 'reporte-horas.index' || Route::currentRouteName() === 'nomina.audit-log' || Route::currentRouteName() === 'info-pto' ? '' : 'collapse' }} "
+                        data-bs-parent="#sidebar-nav">
                         <li>
-                            <a class="{{ Route::currentRouteName() === 'dashboards' ? 'active' : '' }}" href="{{ route('dashboards') }}">
+                            <a class="{{ Route::currentRouteName() === 'dashboards' ? 'active' : '' }}"
+                                href="{{ route('dashboards') }}">
                                 <i class="bi bi-circle"></i><span>Dashboard's</span>
                             </a>
                         </li>
                         <li>
-                            <a class="{{ Route::currentRouteName() === 'nomina.audit-log' ? 'active' : '' }}" href="{{ route('nomina.audit-log') }}">
+                            <a class="{{ Route::currentRouteName() === 'nomina.audit-log' ? 'active' : '' }}"
+                                href="{{ route('nomina.audit-log') }}">
                                 <i class="bi bi-circle"></i><span>Registro de Auditoria</span>
                             </a>
                         </li>
                         <li>
-                            <a class="{{ Route::currentRouteName() === 'reporte-horas.index' ? 'active' : '' }}" href="{{ route('reporte-horas.index') }}">
+                            <a class="{{ Route::currentRouteName() === 'reporte-horas.index' ? 'active' : '' }}"
+                                href="{{ route('reporte-horas.index') }}">
                                 <i class="bi bi-circle"></i><span>Reporte Ponchador</span>
                             </a>
                         </li>
                         <li>
-                            <a class="{{ Route::currentRouteName() === 'info-pto' ? 'active' : '' }}" href="{{ route('info-pto') }}">
+                            <a class="{{ Route::currentRouteName() === 'info-pto' ? 'active' : '' }}"
+                                href="{{ route('info-pto') }}">
                                 <i class="bi bi-circle"></i><span>Informe PTO</span>
                             </a>
                         </li>
@@ -289,7 +315,8 @@ $admin = auth('g_administradores')->user();
 
             <div style="width: 100%;">
                 <li class="nav-item">
-                    <a class="nav-link {{ Route::currentRouteName() === 'config' ? '' : 'collapsed' }}" href="{{route('config')}}">
+                    <a class="nav-link {{ Route::currentRouteName() === 'config' ? '' : 'collapsed' }}"
+                        href="{{ route('config') }}">
                         <i class="bi bi-gear"></i>
                         <span> Configuración </span>
                     </a>
@@ -318,26 +345,26 @@ $admin = auth('g_administradores')->user();
     <a href="#" class="back-to-top d-flex align-items-center justify-content-center"><i
             class="bi bi-arrow-up-short"></i></a>
     <!-- Vendor JS Files -->
-    <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js')}}"></script>
-    <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js')}}"></script>
-    <script src="{{ asset('assets/vendor/chart.js/chart.umd.js')}}"></script>
-    <script src="{{ asset('assets/vendor/echarts/echarts.min.js')}}"></script>
-    <script src="{{ asset('assets/vendor/quill/quill.js')}}"></script>
+    <script src="{{ asset('assets/vendor/apexcharts/apexcharts.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/chart.js/chart.umd.js') }}"></script>
+    <script src="{{ asset('assets/vendor/echarts/echarts.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/quill/quill.js') }}"></script>
 
     <!-- Elimina simple-datatables.js para evitar conflicto -->
-    <!-- <script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js')}}"></script> -->
+    <!-- <script src="{{ asset('assets/vendor/simple-datatables/simple-datatables.js') }}"></script> -->
 
-    <script src="{{ asset('assets/vendor/tinymce/tinymce.min.js')}}"></script>
-    <script src="{{ asset('assets/vendor/php-email-form/validate.js')}}"></script>
+    <script src="{{ asset('assets/vendor/tinymce/tinymce.min.js') }}"></script>
+    <script src="{{ asset('assets/vendor/php-email-form/validate.js') }}"></script>
 
     <!-- SweetAlert JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    
+
 
 
     <!-- Main JS File -->
-    <script src="{{ asset('assets/js/main.js')}}"></script>
+    <script src="{{ asset('assets/js/main.js') }}"></script>
 
     <!-- Script para inicializar el DataTable -->
     <script>
@@ -346,7 +373,6 @@ $admin = auth('g_administradores')->user();
             $('.datatable').DataTable();
         });
     </script>
-
 
 
 </body>

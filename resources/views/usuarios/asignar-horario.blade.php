@@ -15,21 +15,23 @@
     </nav>
 </div> <!-- Fin titulo de pagina -->
 
+@php $j = 0; @endphp
 <section class="section">
     <div class="row justify-content-center">
-        <div class="col-lg-10">
+        <div class="col-lg-10 d-flex gap-4" style="width: 100%;">
+            @foreach ($id_empleado as $emp)
             <div class="card">
                 <div class="card-body ">
                     <form action="{{route('horarios.crear')}}" method="POST">
                         @csrf
                         <div class=" d-flex align-items-baseline justify-content-between mt-3">
-                            <h5 class="card-title">Horario para asignar a <strong> {{$nombre_empleado->nombre}} {{$nombre_empleado->apellido}}</strong></h5>
+                            <h5 class="card-title">Horario para asignar a <strong> {{$nombre_empleado[$j]->nombre}} {{$nombre_empleado[$j]->apellido}}</strong></h5>
                             <div class="d-flex gap-2 align-items-baseline justify-content-end">
                                 <h6 class="card-title"><strong>Total a Trabajar:</strong></h4>
                                     <!-- <span class="card-title" id="totalSumado">0</span> -->
                                     <input name="totalFinal" class="form-control" style="width: 18%;" id="totalSumado" required readonly>
                                     <input type="hidden" name="intervalo" value="{{$intervalo->days}}" required>
-                                    <input type="hidden" name="id_empleado" value="{{$nombre_empleado->id_empleado}}" required>
+                                    <input type="hidden" name="id_empleado" value="{{$nombre_empleado[$j]->id_empleado}}" required>
                             </div>
                         </div>
                         <div class="col-sm-12 mb-4 d-flex justify-content-end">
@@ -100,6 +102,8 @@
                     </form>
                 </div>
             </div>
+            @php $j = $j + 1; @endphp
+            @endforeach
         </div>
     </div>
 </section>

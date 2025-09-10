@@ -120,4 +120,4 @@
 
 </body>
 
-</html><?php /**PATH /home/backup/public_html/people/resources/views/admin/login.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\laragon\www\people\resources\views/admin/login.blade.php ENDPATH**/ ?>
