@@ -1,0 +1,64 @@
+-- CREATE OR REPLACE VIEW z_info_empleados AS 
+SELECT `cv`.`id_configuracion` AS `id_configuracion`,
+        `e`.`id_empleado` AS `id_empleado`,
+        `ad`.`id_empresa` AS `id_empresa`,
+        `s`.`id_sede` AS `id_sede`,
+        concat(`e`.`nombre`,
+        ' ',
+        `e`.`apellido`) AS `nombre_completo`,
+        `e`.`cedula` AS `cedula`,
+        `e`.`fecha_nacimiento` AS `fecha_nacimiento`,
+        timestampdiff(YEAR,
+        `e`.`fecha_nacimiento`,
+        curdate()) AS `edad`,
+        `e`.`genero` AS `genero`,
+        `e`.`correo` AS `correo`,
+        `e`.`celular` AS `celular`,
+        `e`.`estado_civil` AS `estado_civil`,
+        `e`.`nro_hijos` AS `nro_hijos`,
+        `e`.`cargo` AS `cargo`,
+        `d`.`nombre` AS `departamento`,
+        if(((SELECT count(0)
+    FROM `departamentos` `dd`
+    WHERE (`dd`.`lider` = `e`.`id_empleado`)) > 0),`d`.`nombre`,NULL) AS `lider`,
+	 `s`.`nombre` AS `sede`,
+	 `e`.`salario` AS `salario`,
+	 `e`.`fecha_entrada` AS `fecha_entrada`,
+	 `e`.`fecha_salida` AS `fecha_salida`,
+	 if((`e`.`activo` = 1),'Si','No') AS `activo`,
+	 `cv`.`metodo` AS `metodo`,
+	 `cv`.`formato` AS `formato`,
+	 (
+    CASE
+    WHEN (`cv`.`formato` = 'dias') THEN
+    (
+    CASE
+    WHEN (`cv`.`metodo` = 'antiguedad') THEN
+    round((((to_days(curdate()) - to_days(`e`.`fecha_entrada`)) * `cv`.`obtencion`) / `cv`.`por_esto`),0) end)
+    WHEN (`cv`.`formato` = 'horas') THEN
+    (
+    CASE
+    WHEN (`cv`.`metodo` = 'antiguedad') THEN
+    (round((((to_days(curdate()) - to_days(`e`.`fecha_entrada`)) * `cv`.`obtencion`) / `cv`.`por_esto`),0) * 24) end) end) AS `vacaciones_acumuladas`,
+CASE 
+    WHEN cv.formato = 'dias' THEN
+        (
+            CASE
+                WHEN cv.incluir_festivos = 1 AND cv.incluir_dias_laborales = 1 THEN (SELECT SUM(zp.dias_tomados_sin_festivos_y_sin_dias_no_laborales) FROM z_info_permisos zp WHERE zp.id_empleado=e.id_empleado and zp.estado='aprobado')
+                WHEN cv.incluir_festivos = 1 THEN (SELECT SUM(zp.dias_tomados_sin_festivos) FROM z_info_permisos zp WHERE zp.id_empleado=e.id_empleado and zp.estado='aprobado')
+                WHEN cv.incluir_dias_laborales = 1 THEN (SELECT SUM(zp.dias_tomados_sin_dias_no_laborales) FROM z_info_permisos zp WHERE zp.id_empleado=e.id_empleado and zp.estado='aprobado')
+                ELSE (SELECT SUM(zp.dias_tomados) FROM z_info_permisos zp WHERE zp.id_empleado=e.id_empleado and zp.estado='aprobado')
+            END 
+        )
+    WHEN cv.formato = 'horas' THEN (SELECT SUM(zp.dias_tomados) FROM z_info_permisos zp WHERE zp.id_empleado=e.id_empleado and zp.estado='aprobado')*24
+    ELSE 0  -- O cualquier valor por defecto que consideres apropiado
+END AS vacaciones_tomadas, 
+        ((SELECT `vacaciones_acumuladas`) - ifnull((SELECT `vacaciones_tomadas`),
+        0)) AS `vacaciones_disponibles`
+    FROM ((((`empleados` e
+JOIN `departamentos` `d` on((`d`.`id_departamento` = `e`.`id_departamento`)))
+JOIN `administradores` `ad` on((`ad`.`id_admin` = `e`.`creado_por`)))
+LEFT JOIN `sedes` `s` on((`s`.`id_sede` = `e`.`id_sede`)))
+JOIN `configuracion_vacaciones` `cv` on(((`ad`.`id_admin` = `cv`.`creado_por`)
+        AND (`cv`.`id_sede` = `s`.`id_sede`))))
+ORDER BY  concat(`e`.`nombre`,' ',`e`.`apellido`);

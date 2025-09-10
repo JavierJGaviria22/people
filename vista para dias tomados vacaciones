@@ -1,0 +1,31 @@
+CREATE VIEW z_(
+SELECT pp.id_permiso, pp.id_empleado,pp.id_tipo_permiso , 
+    (
+        SELECT COUNT(DISTINCT DATE(DATE_ADD(p.fecha_inicio, INTERVAL n.n DAY)))
+        FROM permisos p
+        JOIN lista_numeros n ON DATE_ADD(p.fecha_inicio, INTERVAL n.n DAY) <= p.fecha_fin
+        WHERE p.id_permiso = pp.id_permiso 
+    ) AS dias_tomados,  -- Días tomados sin condiciones
+
+    (
+        SELECT COUNT(DISTINCT DATE(DATE_ADD(p.fecha_inicio, INTERVAL n.n DAY)))
+        FROM permisos p
+        JOIN lista_numeros n ON DATE_ADD(p.fecha_inicio, INTERVAL n.n DAY) <= p.fecha_fin
+        WHERE p.id_permiso = pp.id_permiso 
+          AND DATE(DATE_ADD(p.fecha_inicio, INTERVAL n.n DAY)) NOT IN (SELECT f.fecha FROM festivos f)
+    ) AS dias_tomados_sin_festivos,  -- Días tomados sin festivos
+
+    (
+        SELECT COUNT(DISTINCT DATE(DATE_ADD(p.fecha_inicio, INTERVAL n.n DAY)))
+        FROM permisos p
+        JOIN lista_numeros n ON DATE_ADD(p.fecha_inicio, INTERVAL n.n DAY) <= p.fecha_fin
+        WHERE p.id_permiso = pp.id_permiso 
+          AND DATE(DATE_ADD(p.fecha_inicio, INTERVAL n.n DAY)) NOT IN (SELECT f.fecha FROM festivos f)
+          AND (0 = FIND_IN_SET(DAYOFWEEK(DATE(DATE_ADD(p.fecha_inicio, INTERVAL n.n DAY))), 
+              (SELECT IFNULL(cc.dias_no_laborales, '') 
+               FROM contratos cc 
+               WHERE cc.id_empleado = p.id_empleado AND cc.activo = 1)))
+    ) AS dias_tomados_sin_festivos_y_sin_dias_no_laborales  -- Días sin festivos y sin días no laborables
+
+FROM permisos pp
+GROUP BY pp.id_empleado, pp.id_permiso;

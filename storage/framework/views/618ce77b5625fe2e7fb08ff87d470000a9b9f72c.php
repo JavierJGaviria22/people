@@ -1,0 +1,291 @@
+<?php $__env->startSection('title', 'SkaPeople - Horarios'); ?>
+
+<?php $__env->startSection('content'); ?>
+<!-- Titulo de pagina -->
+<div class="pagetitle">
+    <h1>Crear Horario</h1>
+    <nav>
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="<?php echo e(route('/')); ?>">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="<?php echo e(route('mis-permisos')); ?>">Horarios</a></li>
+            <li class="breadcrumb-item"><a href="<?php echo e(route('nuevo-permiso')); ?>">Crear Horario</a></li>
+        </ol>
+    </nav>
+</div> <!-- Fin titulo de pagina -->
+
+<section class="section">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="card">
+                <div class="card-body ">
+                    <form action="<?php echo e(route('horarios.crear')); ?>" method="POST">
+                        <?php echo csrf_field(); ?>
+                        <div class=" d-flex align-items-baseline justify-content-between mt-3">
+                            <h5 class="card-title">Horario para asignar a <strong> <?php echo e($nombre_empleado->nombre); ?> <?php echo e($nombre_empleado->apellido); ?></strong></h5>
+                            <div class="d-flex gap-2 align-items-baseline justify-content-end">
+                                <h6 class="card-title"><strong>Total a Trabajar:</strong></h4>
+                                    <!-- <span class="card-title" id="totalSumado">0</span> -->
+                                    <input name="totalFinal" class="form-control" style="width: 18%;" id="totalSumado" required readonly>
+                                    <input type="hidden" name="intervalo" value="<?php echo e($intervalo->days); ?>" required>
+                                    <input type="hidden" name="id_empleado" value="<?php echo e($nombre_empleado->id_empleado); ?>" required>
+                            </div>
+                        </div>
+                        <div class="col-sm-12 mb-4 d-flex justify-content-end">
+                            <button type="submit" class="btn btn-primary">Asignar</button>
+                        </div>
+
+                        <?php if($errors->any()): ?>
+                        <div class="alert alert-danger">
+                            <ul>
+                                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <li><?php echo e($error); ?></li>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            </ul>
+                        </div>
+                        <?php endif; ?>
+
+                        <?php if(session('success')): ?>
+                        <div class="alert alert-success">
+                            <?php echo e(session('success')); ?>
+
+                        </div>
+                        <?php endif; ?>
+
+                        <!-- Table with stripped rows -->
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-sm">
+                                <thead>
+                                    <tr>
+                                        <th class="text-center">Fecha</th>
+                                        <th class="text-center">Entrada</th>
+                                        <th class="text-center">Salida</th>
+                                        <th class="text-center">Almuerzo</th>
+                                        <th class="text-center">Sede</th>
+                                        <th class="text-center">Total</th>
+                                        <th class="text-center">Novedad</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <?php for($i = 0; $i <= $intervalo->days; $i++): ?>
+                                        <tr>
+                                            <td class="text-center"><?php echo e(\Carbon\Carbon::parse($fecha_inicio)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY')); ?></td>
+                                            <input type="hidden" name="fecha<?php echo e($i); ?>" value="<?php echo e(\Carbon\Carbon::parse($fecha_inicio)); ?>" required>
+                                            <td class="text-center"><input name="entrada<?php echo e($i); ?>" class="form-control hora1" type="time" id="hora" required></td>
+                                            <td class="text-center"><input name="salida<?php echo e($i); ?>" class="form-control hora2" type="time" id="hora2" required></td>
+                                            <td class="text-center"><input name="lunch<?php echo e($i); ?>" class="form-control lunch" type="number" id="cantidad" name="cantidad" min="0" step="any" required></td>
+                                            <td class="text-center"> <select style="width: auto;" id="sede" name="sede<?php echo e($i); ?>" class="form-select" aria-label="Default select example" required>
+                                                    <option value="" <?php echo e(old('sede') ? '' : 'selected'); ?> disabled>Seleccionar</option>
+                                                    <?php $__currentLoopData = $sedes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sede): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($sede->id_sede); ?>" <?php echo e(old('sede') == $sede->id_sede ? 'selected' : ''); ?>>
+                                                        <?php echo e($sede->nombre); ?>
+
+                                                    </option>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                </select></td>
+                                            <td class="text-center"><input name="total<?php echo e($i); ?>" class="form-control resultado" id="resultado" required readonly></td>
+                                            <td class="text-center"><select style="width: auto;" id="novedad" name="novedad<?php echo e($i); ?>" class="form-select" aria-label="Default select example">
+                                                    <option value="" <?php echo e(old('novedad') ? '' : 'selected'); ?>>Sin Novedad</option>
+                                                    <?php $__currentLoopData = $novedades; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $novedad): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($novedad->id_tipo_permiso); ?>" <?php echo e(old('novedad') == $novedad->id_tipo_permiso ? 'selected' : ''); ?>>
+                                                        <?php echo e($novedad->permiso); ?>
+
+                                                    </option>
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                                                </select></td>
+                                        </tr>
+                                        <?php $fecha_inicio = $fecha_inicio->modify("+1 day"); ?>
+                                        <?php endfor; ?>
+                                </tbody>
+                            </table>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script>
+    // Obtener todas las referencias a los elementos del DOM con las clases correspondientes
+    const horas1Inputs = document.querySelectorAll('.hora1');
+    const horas2Inputs = document.querySelectorAll('.hora2');
+    const lunchInputs = document.querySelectorAll('.lunch');
+    const resultadoInputs = document.querySelectorAll('.resultado');
+
+    // Iterar sobre cada conjunto de inputs
+    horas1Inputs.forEach((hora1Input, index) => {
+        const hora2Input = horas2Inputs[index];
+        const lunchInput = lunchInputs[index];
+        const resultadoInput = resultadoInputs[index];
+
+        // Escuchar cambios en los inputs de hora y lunch para cada conjunto
+        hora1Input.addEventListener('input', calcularDiferencia);
+        hora2Input.addEventListener('input', calcularDiferencia);
+        lunchInput.addEventListener('input', calcularDiferencia);
+
+        function calcularDiferencia() {
+            const hora1 = hora1Input.value;
+            const hora2 = hora2Input.value;
+            const lunch = parseFloat(lunchInput.value); // Convertir a número decimal
+
+            // Verificar que haya valores en ambos inputs
+            if (hora1 && hora2) {
+                // Convertir las cadenas de hora a objetos Date
+                const date1 = new Date(`2000-01-01T${hora1}`);
+                const date2 = new Date(`2000-01-01T${hora2}`);
+
+                // Calcular la diferencia en milisegundos
+                let diferencia_ms = date2 - date1;
+
+                // Convertir la diferencia a horas
+                let diferencia_horas = diferencia_ms / (1000 * 60 * 60);
+
+                // Restar el tiempo de descanso
+                diferencia_horas -= lunch;
+
+                // Mostrar el resultado en el input de resultado
+                resultadoInput.value = diferencia_horas.toFixed(2); // Mostrar dos decimales
+            }
+        }
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Obtener todos los selects de novedad
+        const novedadesSelects = document.querySelectorAll('#novedad');
+
+        // Iterar sobre cada select de novedad
+        novedadesSelects.forEach((novedadSelect, index) => {
+            // Obtener todos los inputs de la fila correspondiente
+            const fila = novedadSelect.closest('tr');
+            const inputsDeFila = fila.querySelectorAll('input, select'); // Seleccionamos todos los inputs y selects de la fila
+
+            // Obtener el input de fecha correspondiente (por su nombre)
+            const fechaInput = fila.querySelector(`input[name="fecha${index}"]`);
+
+            // Agregar un evento para cuando el usuario cambie la opción de novedad
+            novedadSelect.addEventListener('change', function() {
+                // Verificamos si la opción seleccionada no es "Sin Novedad" (o su valor 5)
+                if (novedadSelect.value !== "" && novedadSelect.value !== "5" && novedadSelect.value !== "6") { // "5" es el valor de Sin Novedad
+                    // Deshabilitar todos los inputs de la fila excepto el select de novedad y el input de fecha
+                    inputsDeFila.forEach(input => {
+                        if (input !== novedadSelect && input !== fechaInput) { // No deshabilitar el select de novedad ni el input de fecha
+                            input.disabled = true; // Deshabilitar el input
+                            input.value = ""; // Borrar el valor del input
+                        }
+                    });
+                } else {
+                    // Habilitar todos los inputs de la fila si es "Sin Novedad" o valor 5
+                    inputsDeFila.forEach(input => {
+                        if (input !== novedadSelect && input !== fechaInput) { // No habilitar el select de novedad ni el input de fecha
+                            input.disabled = false; // Habilitar el input
+                        }
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Función para calcular la suma de la columna Total
+        function calcularSumaTotal() {
+            let total = 0;
+
+            // Obtener todos los inputs de la columna Total (clase .resultado)
+            const resultados = document.querySelectorAll('.resultado');
+
+            // Recorrer todos los inputs y sumarlos
+            resultados.forEach(input => {
+                const valor = parseFloat(input.value); // Convertir el valor del input a número
+                if (!isNaN(valor)) { // Verificar que el valor sea un número válido
+                    total += valor; // Sumar al total
+                }
+            });
+
+            // Mostrar el total en el contenedor con id 'totalSumado'
+            document.getElementById('totalSumado').value = total.toFixed(2); // Mostrar el total con dos decimales
+        }
+
+        // Obtener todas las referencias a los elementos del DOM con las clases correspondientes
+        const horas1Inputs = document.querySelectorAll('.hora1');
+        const horas2Inputs = document.querySelectorAll('.hora2');
+        const lunchInputs = document.querySelectorAll('.lunch');
+        const resultadoInputs = document.querySelectorAll('.resultado');
+
+        // Iterar sobre cada conjunto de inputs
+        horas1Inputs.forEach((hora1Input, index) => {
+            const hora2Input = horas2Inputs[index];
+            const lunchInput = lunchInputs[index];
+            const resultadoInput = resultadoInputs[index];
+
+            // Escuchar cambios en los inputs de hora y lunch para cada conjunto
+            hora1Input.addEventListener('input', function() {
+                calcularDiferencia(index);
+                calcularSumaTotal(); // Actualizar la suma cada vez que se recalculen los resultados
+            });
+            hora2Input.addEventListener('input', function() {
+                calcularDiferencia(index);
+                calcularSumaTotal(); // Actualizar la suma cada vez que se recalculen los resultados
+            });
+            lunchInput.addEventListener('input', function() {
+                calcularDiferencia(index);
+                calcularSumaTotal(); // Actualizar la suma cada vez que se recalculen los resultados
+            });
+
+            function calcularDiferencia() {
+                const hora1 = hora1Input.value;
+                const hora2 = hora2Input.value;
+                const lunch = parseFloat(lunchInput.value); // Convertir a número decimal
+
+                // Verificar que haya valores en ambos inputs
+                if (hora1 && hora2) {
+                    // Convertir las cadenas de hora a objetos Date
+                    const date1 = new Date(`2000-01-01T${hora1}`);
+                    const date2 = new Date(`2000-01-01T${hora2}`);
+
+                    // Calcular la diferencia en milisegundos
+                    let diferencia_ms = date2 - date1;
+
+                    // Convertir la diferencia a horas
+                    let diferencia_horas = diferencia_ms / (1000 * 60 * 60);
+
+                    // Restar el tiempo de descanso
+                    diferencia_horas -= lunch;
+
+                    // Mostrar el resultado en el input de resultado
+                    resultadoInput.value = diferencia_horas.toFixed(2); // Mostrar dos decimales
+                }
+            }
+        });
+
+        // Inicializar la suma total cuando se carga la página
+        calcularSumaTotal();
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr("#hora", {
+            enableTime: true, // Habilitar la selección de tiempo
+            noCalendar: true, // Ocultar el calendario
+            dateFormat: "H:i", // Formato de hora que se va a mostrar y guardar
+            time_24hr: false, // Usar formato de 24 horas
+
+        });
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+        flatpickr("#hora2", {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: false,
+        });
+    });
+</script>
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.admin-layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH /home/backup/public_html/people/resources/views/admin/asignar-horario.blade.php ENDPATH**/ ?>

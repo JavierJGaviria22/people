@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input con Autocompletado Dinámico</title>
+    <style>
+        .autocomplete-suggestions {
+            border: 1px solid #ccc;
+            max-height: 200px;
+            overflow-y: auto;
+            position: absolute;
+            z-index: 1000;
+            width: 300px;
+            background-color: white;
+        }
+
+        .autocomplete-suggestion {
+            padding: 8px;
+            cursor: pointer;
+        }
+
+        .autocomplete-suggestion:hover {
+            background-color: #f0f0f0;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Autocompletado Dinámico</h1>
+    <input type="text" id="autocomplete-input" placeholder="Escribe algo..." />
+
+    <div id="suggestions-container" class="autocomplete-suggestions"></div>
+
+    <script>document.addEventListener('DOMContentLoaded', function () {
+    const input = document.getElementById('autocomplete-input');
+    const suggestionsContainer = document.getElementById('suggestions-container');
+
+    const data = [
+        'Manzana', 'Mandarina', 'Mango', 'Melocotón', 'Mora',
+        'Plátano', 'Piña', 'Pera', 'Durazno', 'Granada', 'Cereza'
+    ];
+
+    input.addEventListener('input', function () {
+        const query = input.value.toLowerCase();
+        suggestionsContainer.innerHTML = ''; // Limpiar sugerencias anteriores
+
+        if (query.length > 0) {
+            // Filtrar los resultados
+            const filteredData = data.filter(articulo => item.toLowerCase().includes(query));
+            filteredData.forEach(function (articulo) {
+                const suggestion = document.createElement('div');
+                suggestion.classList.add('autocomplete-suggestion');
+                suggestion.textContent = item;
+                suggestion.addEventListener('click', function () {
+                    input.value = item; // Establecer el valor seleccionado
+                    suggestionsContainer.innerHTML = ''; // Limpiar sugerencias
+                });
+                suggestionsContainer.appendChild(suggestion);
+            });
+        }
+    });
+
+    // Cerrar el contenedor si se hace clic fuera del input o del contenedor de sugerencias
+    document.addEventListener('click', function (e) {
+        if (!input.contains(e.target) && !suggestionsContainer.contains(e.target)) {
+            suggestionsContainer.innerHTML = '';
+        }
+    });
+});
+</script>
+</body>
+</html>
