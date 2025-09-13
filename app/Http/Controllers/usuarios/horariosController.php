@@ -170,13 +170,22 @@ class horariosController extends Controller
         }
 
         $errores = [];
-        // dd($request->input('fecha0'));
-        for ($i = 0; $i <= $request->input('intervalo'); $i++) {
+        $creados = 0;
 
+        $intervalo = $request->input('intervalo');
+        if ($intervalo === null) {
+            // fallback para compatibilidad
+            $intervalo = 0;
+            while ($request->has('fecha' . $intervalo)) {
+                $intervalo++;
+            }
+            $intervalo--;
+        }
+
+        for ($i = 0; $i <= $intervalo; $i++) {
             $horario = Horarios::where('id_empleado', $request->input('id_empleado'))
                 ->where('fecha_h', $request->input('fecha' . $i))
                 ->first();
-
 
             if ($horario != null) {
                 $errores[] = 'Ya existe un horario en esta fecha: ' . Carbon::parse($request->input('fecha' . $i))->format('Y-m-d');
@@ -195,6 +204,22 @@ class horariosController extends Controller
             $nuevoHorario->id_permiso = $request->input('novedad' . $i);
             $nuevoHorario->creado_por = $id_empleado2;
             $nuevoHorario->save();
+            $creados++;
+        }
+
+        if ($request->ajax()) {
+            if ($errores) {
+                return response()->json([
+                    'success' => false,
+                    'errores' => $errores,
+                    'creados' => $creados
+                ], 200);
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'Horario creado correctamente',
+                'creados' => $creados
+            ], 200);
         }
 
         if ($errores) {

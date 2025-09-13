@@ -1,3 +1,7 @@
+@php
+    $fecha_inicio_original = $fecha_inicio;
+@endphp
+
 @extends('layouts.layout')
 
 @section('title', 'SkaPeople - Horarios')
@@ -22,84 +26,89 @@
             @foreach ($id_empleado as $emp)
             <div class="card">
                 <div class="card-body ">
-                    <form action="{{route('horarios.crear')}}" method="POST">
-                        @csrf
-                        <div class=" d-flex align-items-baseline justify-content-between mt-3">
-                            <h5 class="card-title">Horario para asignar a <strong> {{$nombre_empleado[$j]->nombre}} {{$nombre_empleado[$j]->apellido}}</strong></h5>
-                            <div class="d-flex gap-2 align-items-baseline justify-content-end">
-                                <h6 class="card-title"><strong>Total a Trabajar:</strong></h4>
-                                    <!-- <span class="card-title" id="totalSumado">0</span> -->
-                                    <input name="totalFinal" class="form-control" style="width: 18%;" id="totalSumado" required readonly>
-                                    <input type="hidden" name="intervalo" value="{{$intervalo->days}}" required>
-                                    <input type="hidden" name="id_empleado" value="{{$nombre_empleado[$j]->id_empleado}}" required>
-                            </div>
+                    {{-- QUITAMOS EL FORM --}}
+                    <div class=" d-flex align-items-baseline justify-content-between mt-3">
+                        <h5 class="card-title">Horario para asignar a <strong> {{$nombre_empleado[$j]->nombre}} {{$nombre_empleado[$j]->apellido}}</strong></h5>
+                        <div class="d-flex gap-2 align-items-baseline justify-content-end">
+                            <h6 class="card-title"><strong>Total a Trabajar:</strong></h6>
+                                <input name="totalFinal" class="form-control" style="width: 18%;" id="totalSumado-{{ $j }}" required readonly>
+                                <input type="hidden" id="intervalo-{{ $j }}" value="{{$intervalo->days}}" required>
+                                <input type="hidden" id="id_empleado-{{ $j }}" value="{{$nombre_empleado[$j]->id_empleado}}" required>
                         </div>
-                        <div class="col-sm-12 mb-4 d-flex justify-content-end">
-                            <button type="submit" class="btn btn-primary">Asignar</button>
-                        </div>
+                    </div>
+                    <div class="col-sm-12 mb-4 d-flex justify-content-end">
+                        <button type="button" class="btn btn-primary btn-asignar" data-index="{{ $j }}">Asignar</button>
+                    </div>
 
-                        @if ($errors->any())
-                        <div class="alert alert-danger">
-                            <ul>
-                                @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        </div>
-                        @endif
+                    @if ($errors->any())
+                    <div class="alert alert-danger">
+                        <ul>
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
 
-                        @if (session('success'))
-                        <div class="alert alert-success">
-                            {{ session('success') }}
-                        </div>
-                        @endif
+                    @if (session('success'))
+                    <div class="alert alert-success">
+                        {{ session('success') }}
+                    </div>
+                    @endif
 
-                        <!-- Table with stripped rows -->
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-sm">
-                                <thead>
+                    <!-- Table with stripped rows -->
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-sm" id="tabla-horario-{{ $j }}">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Fecha</th>
+                                    <th class="text-center">Entrada</th>
+                                    <th class="text-center">Salida</th>
+                                    <th class="text-center">Almuerzo</th>
+                                    <th class="text-center">Sede</th>
+                                    <th class="text-center">Total</th>
+                                    <th class="text-center">Novedad</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @php
+                                if($j > 0) {
+                                    $fecha_inicio = $fecha_inicio->modify("-" . $intervalo->days + 1 . " day");
+                                }
+                                @endphp
+                                
+                                @for($i = 0; $i <= $intervalo->days; $i++)
                                     <tr>
-                                        <th class="text-center">Fecha</th>
-                                        <th class="text-center">Entrada</th>
-                                        <th class="text-center">Salida</th>
-                                        <th class="text-center">Almuerzo</th>
-                                        <th class="text-center">Sede</th>
-                                        <th class="text-center">Total</th>
-                                        <th class="text-center">Novedad</th>
+                                        <td class="text-center" data-index="{{ $j }}">
+                                            {{ \Carbon\Carbon::parse($fecha_inicio)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}
+                                            <input type="hidden" class="fecha" data-index="{{ $j }}" value="{{ \Carbon\Carbon::parse($fecha_inicio)->toDateString()}}" required>
+                                        </td>
+                                        <td class="text-center"><input class="form-control hora1" type="time" data-index="{{ $j }}" required></td>
+                                        <td class="text-center"><input class="form-control hora2" type="time" data-index="{{ $j }}" required></td>
+                                        <td class="text-center"><input class="form-control lunch" type="number" min="0" step="any" data-index="{{ $j }}" required></td>
+                                        <td class="text-center">
+                                            <select style="width: auto;" class="form-select sede" data-index="{{ $j }}" required>
+                                                <option value="" disabled selected>Seleccionar</option>
+                                                @foreach($sedes as $sede)
+                                                <option value="{{ $sede->id_sede }}">{{ $sede->nombre }}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
+                                        <td class="text-center"><input class="form-control resultado" data-index="{{ $j }}" required readonly></td>
+                                        <td class="text-center">
+                                            <select style="width: auto;" class="form-select novedad" data-index="{{ $j }}">
+                                                <option value="" selected>Sin Novedad</option>
+                                                @foreach($novedades as $novedad)
+                                                <option value="{{ $novedad->id_tipo_permiso }}">{{ $novedad->permiso }}</option>
+                                                @endforeach
+                                            </select>
+                                        </td>
                                     </tr>
-                                </thead>
-                                <tbody>
-                                    @for($i = 0; $i <= $intervalo->days; $i++)
-                                        <tr>
-                                            <td class="text-center">{{ \Carbon\Carbon::parse($fecha_inicio)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}</td>
-                                            <input type="hidden" name="fecha{{$i}}" value="{{ \Carbon\Carbon::parse($fecha_inicio)}}" required>
-                                            <td class="text-center"><input name="entrada{{$i}}" class="form-control hora1" type="time" id="hora" required></td>
-                                            <td class="text-center"><input name="salida{{$i}}" class="form-control hora2" type="time" id="hora2" required></td>
-                                            <td class="text-center"><input name="lunch{{$i}}" class="form-control lunch" type="number" id="cantidad" name="cantidad" min="0" step="any" required></td>
-                                            <td class="text-center"> <select style="width: auto;" id="sede" name="sede{{$i}}" class="form-select" aria-label="Default select example" required>
-                                                    <option value="" {{ old('sede') ? '' : 'selected' }} disabled>Seleccionar</option>
-                                                    @foreach($sedes as $sede)
-                                                    <option value="{{ $sede->id_sede }}" {{ old('sede') == $sede->id_sede ? 'selected' : '' }}>
-                                                        {{ $sede->nombre }}
-                                                    </option>
-                                                    @endforeach
-                                                </select></td>
-                                            <td class="text-center"><input name="total{{$i}}" class="form-control resultado" id="resultado" required readonly></td>
-                                            <td class="text-center"><select style="width: auto;" id="novedad" name="novedad{{$i}}" class="form-select" aria-label="Default select example">
-                                                    <option value="" {{ old('novedad') ? '' : 'selected' }}>Sin Novedad</option>
-                                                    @foreach($novedades as $novedad)
-                                                    <option value="{{ $novedad->id_tipo_permiso }}" {{ old('novedad') == $novedad->id_tipo_permiso ? 'selected' : '' }}>
-                                                        {{ $novedad->permiso }}
-                                                    </option>
-                                                    @endforeach
-                                                </select></td>
-                                        </tr>
-                                        @php $fecha_inicio = $fecha_inicio->modify("+1 day"); @endphp
-                                        @endfor
-                                </tbody>
-                            </table>
-                        </div>
-                    </form>
+                                    @php $fecha_inicio = $fecha_inicio->modify("+1 day"); @endphp
+                                @endfor
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
             @php $j = $j + 1; @endphp
@@ -107,187 +116,119 @@
         </div>
     </div>
 </section>
+
+{{-- SCRIPTS --}}
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
-    // Obtener todas las referencias a los elementos del DOM con las clases correspondientes
-    const horas1Inputs = document.querySelectorAll('.hora1');
-    const horas2Inputs = document.querySelectorAll('.hora2');
-    const lunchInputs = document.querySelectorAll('.lunch');
-    const resultadoInputs = document.querySelectorAll('.resultado');
+$(document).ready(function() {
+    function deshabilitarElementosPorDataIndex(index) {
+    $('[data-index="' + index + '"]').filter('input, select, button').prop('disabled', true);
+    $('[data-index="' + index + '"]').filter('td').css('background-color', 'chartreuse');
+    }
+    // Para cada card
+    @foreach ($id_empleado as $emp)
+    (function(index) {
+        // Calcular suma total de la card
+        function calcularSumaTotalCard() {
+            let total = 0;
+            $(`.resultado[data-index='${index}']`).each(function() {
+                const valor = parseFloat($(this).val());
+                if (!isNaN(valor)) total += valor;
+            });
+            $(`#totalSumado-${index}`).val(total.toFixed(2));
+        }
 
-    // Iterar sobre cada conjunto de inputs
-    horas1Inputs.forEach((hora1Input, index) => {
-        const hora2Input = horas2Inputs[index];
-        const lunchInput = lunchInputs[index];
-        const resultadoInput = resultadoInputs[index];
-
-        // Escuchar cambios en los inputs de hora y lunch para cada conjunto
-        hora1Input.addEventListener('input', calcularDiferencia);
-        hora2Input.addEventListener('input', calcularDiferencia);
-        lunchInput.addEventListener('input', calcularDiferencia);
-
-        function calcularDiferencia() {
-            const hora1 = hora1Input.value;
-            const hora2 = hora2Input.value;
-            const lunch = parseFloat(lunchInput.value); // Convertir a número decimal
-
-            // Verificar que haya valores en ambos inputs
+        // Cálculo de diferencia por fila
+        $(`.hora1[data-index='${index}'], .hora2[data-index='${index}'], .lunch[data-index='${index}']`).on('input', function() {
+            const row = $(this).closest('tr');
+            const hora1 = row.find(`.hora1[data-index='${index}']`).val();
+            const hora2 = row.find(`.hora2[data-index='${index}']`).val();
+            const lunch = parseFloat(row.find(`.lunch[data-index='${index}']`).val()) || 0;
             if (hora1 && hora2) {
-                // Convertir las cadenas de hora a objetos Date
                 const date1 = new Date(`2000-01-01T${hora1}`);
                 const date2 = new Date(`2000-01-01T${hora2}`);
-
-                // Calcular la diferencia en milisegundos
-                let diferencia_ms = date2 - date1;
-
-                // Convertir la diferencia a horas
-                let diferencia_horas = diferencia_ms / (1000 * 60 * 60);
-
-                // Restar el tiempo de descanso
-                diferencia_horas -= lunch;
-
-                // Mostrar el resultado en el input de resultado
-                resultadoInput.value = diferencia_horas.toFixed(2); // Mostrar dos decimales
+                let diferencia_horas = (date2 - date1) / (1000 * 60 * 60) - lunch;
+                row.find(`.resultado[data-index='${index}']`).val(diferencia_horas.toFixed(2));
+            } else {
+                row.find(`.resultado[data-index='${index}']`).val('');
             }
-        }
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Obtener todos los selects de novedad
-        const novedadesSelects = document.querySelectorAll('#novedad');
-
-        // Iterar sobre cada select de novedad
-        novedadesSelects.forEach((novedadSelect, index) => {
-            // Obtener todos los inputs de la fila correspondiente
-            const fila = novedadSelect.closest('tr');
-            const inputsDeFila = fila.querySelectorAll('input, select'); // Seleccionamos todos los inputs y selects de la fila
-
-            // Obtener el input de fecha correspondiente (por su nombre)
-            const fechaInput = fila.querySelector(`input[name="fecha${index}"]`);
-
-            // Agregar un evento para cuando el usuario cambie la opción de novedad
-            novedadSelect.addEventListener('change', function() {
-                // Verificamos si la opción seleccionada no es "Sin Novedad" (o su valor 5)
-                if (novedadSelect.value !== "" && novedadSelect.value !== "5" && novedadSelect.value !== "6") { // "5" es el valor de Sin Novedad
-                    // Deshabilitar todos los inputs de la fila excepto el select de novedad y el input de fecha
-                    inputsDeFila.forEach(input => {
-                        if (input !== novedadSelect && input !== fechaInput) { // No deshabilitar el select de novedad ni el input de fecha
-                            input.disabled = true; // Deshabilitar el input
-                            input.value = ""; // Borrar el valor del input
-                        }
-                    });
-                } else {
-                    // Habilitar todos los inputs de la fila si es "Sin Novedad" o valor 5
-                    inputsDeFila.forEach(input => {
-                        if (input !== novedadSelect && input !== fechaInput) { // No habilitar el select de novedad ni el input de fecha
-                            input.disabled = false; // Habilitar el input
-                        }
-                    });
-                }
-            });
+            calcularSumaTotalCard();
         });
-    });
-</script>
 
+        // Inicializar suma al cargar
+        calcularSumaTotalCard();
 
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Función para calcular la suma de la columna Total
-        function calcularSumaTotal() {
-            let total = 0;
-
-            // Obtener todos los inputs de la columna Total (clase .resultado)
-            const resultados = document.querySelectorAll('.resultado');
-
-            // Recorrer todos los inputs y sumarlos
-            resultados.forEach(input => {
-                const valor = parseFloat(input.value); // Convertir el valor del input a número
-                if (!isNaN(valor)) { // Verificar que el valor sea un número válido
-                    total += valor; // Sumar al total
-                }
-            });
-
-            // Mostrar el total en el contenedor con id 'totalSumado'
-            document.getElementById('totalSumado').value = total.toFixed(2); // Mostrar el total con dos decimales
-        }
-
-        // Obtener todas las referencias a los elementos del DOM con las clases correspondientes
-        const horas1Inputs = document.querySelectorAll('.hora1');
-        const horas2Inputs = document.querySelectorAll('.hora2');
-        const lunchInputs = document.querySelectorAll('.lunch');
-        const resultadoInputs = document.querySelectorAll('.resultado');
-
-        // Iterar sobre cada conjunto de inputs
-        horas1Inputs.forEach((hora1Input, index) => {
-            const hora2Input = horas2Inputs[index];
-            const lunchInput = lunchInputs[index];
-            const resultadoInput = resultadoInputs[index];
-
-            // Escuchar cambios en los inputs de hora y lunch para cada conjunto
-            hora1Input.addEventListener('input', function() {
-                calcularDiferencia(index);
-                calcularSumaTotal(); // Actualizar la suma cada vez que se recalculen los resultados
-            });
-            hora2Input.addEventListener('input', function() {
-                calcularDiferencia(index);
-                calcularSumaTotal(); // Actualizar la suma cada vez que se recalculen los resultados
-            });
-            lunchInput.addEventListener('input', function() {
-                calcularDiferencia(index);
-                calcularSumaTotal(); // Actualizar la suma cada vez que se recalculen los resultados
-            });
-
-            function calcularDiferencia() {
-                const hora1 = hora1Input.value;
-                const hora2 = hora2Input.value;
-                const lunch = parseFloat(lunchInput.value); // Convertir a número decimal
-
-                // Verificar que haya valores en ambos inputs
-                if (hora1 && hora2) {
-                    // Convertir las cadenas de hora a objetos Date
-                    const date1 = new Date(`2000-01-01T${hora1}`);
-                    const date2 = new Date(`2000-01-01T${hora2}`);
-
-                    // Calcular la diferencia en milisegundos
-                    let diferencia_ms = date2 - date1;
-
-                    // Convertir la diferencia a horas
-                    let diferencia_horas = diferencia_ms / (1000 * 60 * 60);
-
-                    // Restar el tiempo de descanso
-                    diferencia_horas -= lunch;
-
-                    // Mostrar el resultado en el input de resultado
-                    resultadoInput.value = diferencia_horas.toFixed(2); // Mostrar dos decimales
-                }
+        // Novedad: deshabilitar/rehabilitar inputs de la fila
+        $(`.novedad[data-index='${index}']`).on('change', function() {
+            const row = $(this).closest('tr');
+            if ($(this).val() !== "" && $(this).val() !== "5" && $(this).val() !== "6") {
+                row.find('input, select').not(this).not('.fecha').prop('disabled', true).val('');
+            } else {
+                row.find('input, select').not(this).not('.fecha').prop('disabled', false);
             }
         });
 
-        // Inicializar la suma total cuando se carga la página
-        calcularSumaTotal();
-    });
+        // Enviar por AJAX
+        $(`.btn-asignar[data-index='${index}']`).on('click', function() {
+            let data = {
+                _token: '{{ csrf_token() }}',
+                id_empleado: $(`#id_empleado-${index}`).val(),
+                totalFinal: $(`#totalSumado-${index}`).val(),
+                intervalo: $(`#intervalo-${index}`).val(),
+            };
+            // Recorrer filas y agregar datos
+            $(`#tabla-horario-${index} tbody tr`).each(function(i) {
+                data[`fecha${i}`] = $(this).find('.fecha').val();
+                data[`entrada${i}`] = $(this).find('.hora1').val();
+                data[`salida${i}`] = $(this).find('.hora2').val();
+                data[`lunch${i}`] = $(this).find('.lunch').val();
+                data[`sede${i}`] = $(this).find('.sede').val();
+                data[`total${i}`] = $(this).find('.resultado').val();
+                data[`novedad${i}`] = $(this).find('.novedad').val();
+            });
+            $.ajax({
+                url: '{{ route('horarios.crear') }}',
+                method: 'POST',
+                data: data,
+                success: function(response) {
+                    if (response.success == false) {
+                        alert('Ya existe un horario en alguna de las fechas o hay campos vacios');
+                    } else {
+                        deshabilitarElementosPorDataIndex(index);
+                        alert('Horario asignado correctamente');
+                    }
+                },
+                error: function(xhr) {
+                    alert('Error al asignar horario');
+                }
+            });
+        });
+    })({{ $loop->index }});
+    @endforeach
+});
 </script>
 
+{{-- Si usas flatpickr, inicialízalo así para cada input --}}
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        flatpickr("#hora", {
-            enableTime: true, // Habilitar la selección de tiempo
-            noCalendar: true, // Ocultar el calendario
-            dateFormat: "H:i", // Formato de hora que se va a mostrar y guardar
-            time_24hr: false, // Usar formato de 24 horas
-
-        });
-    });
-
-    document.addEventListener('DOMContentLoaded', function() {
-        flatpickr("#hora2", {
+$(document).ready(function() {
+    @foreach ($id_empleado as $emp)
+    $(`.hora1[data-index='{{ $loop->index }}']`).each(function() {
+        flatpickr(this, {
             enableTime: true,
             noCalendar: true,
             dateFormat: "H:i",
             time_24hr: false,
         });
     });
+    $(`.hora2[data-index='{{ $loop->index }}']`).each(function() {
+        flatpickr(this, {
+            enableTime: true,
+            noCalendar: true,
+            dateFormat: "H:i",
+            time_24hr: false,
+        });
+    });
+    @endforeach
+});
 </script>
 @endsection
