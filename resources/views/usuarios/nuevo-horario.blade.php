@@ -108,7 +108,7 @@
     <script>
         $(document).ready(function() {
             $('#empleadoSelect').select2({
-                placeholder: "Selecciona hasta 3 empleados",
+                placeholder: "",
                 maximumSelectionLength: 3,
                 width: '100%',
                 language: {

@@ -8,6 +8,30 @@
 
 <?php $__env->startSection('content'); ?>
 <!-- Titulo de pagina -->
+
+<head>
+    <style>
+        .form-control {
+            padding: 0;
+            font-size: 0.8rem;
+        }
+
+        .form-select {
+            padding: 0 20px 0 0;
+            font-size: 0.8rem;
+        }
+
+        .novedad {
+            width: 8rem;
+        }
+
+       .btn-asignar {
+            padding: 5px;
+            font-size: 0.77rem;
+       }
+    </style>
+</head>
+
 <div class="pagetitle">
     <h1>Crear Horario</h1>
     <nav>
@@ -20,7 +44,7 @@
 </div> <!-- Fin titulo de pagina -->
 
 <?php $j = 0; ?>
-<section class="section">
+<section class="section" style="font-size: 0.8rem;">
     <div class="row justify-content-center">
         <div class="col-lg-10 d-flex gap-4" style="width: 100%;">
             <?php $__currentLoopData = $id_empleado; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $emp): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -31,7 +55,7 @@
                         <h5 class="card-title">Horario para asignar a <strong> <?php echo e($nombre_empleado[$j]->nombre); ?> <?php echo e($nombre_empleado[$j]->apellido); ?></strong></h5>
                         <div class="d-flex gap-2 align-items-baseline justify-content-end">
                             <h6 class="card-title"><strong>Total a Trabajar:</strong></h6>
-                                <input name="totalFinal" class="form-control" style="width: 18%;" id="totalSumado-<?php echo e($j); ?>" required readonly>
+                                <input name="totalFinal" class="form-control" style="width: 25%;" id="totalSumado-<?php echo e($j); ?>" required readonly>
                                 <input type="hidden" id="intervalo-<?php echo e($j); ?>" value="<?php echo e($intervalo->days); ?>" required>
                                 <input type="hidden" id="id_empleado-<?php echo e($j); ?>" value="<?php echo e($nombre_empleado[$j]->id_empleado); ?>" required>
                         </div>
@@ -98,7 +122,7 @@
                                         </td>
                                         <td class="text-center"><input class="form-control resultado" data-index="<?php echo e($j); ?>" required readonly></td>
                                         <td class="text-center">
-                                            <select style="width: auto;" class="form-select novedad" data-index="<?php echo e($j); ?>">
+                                            <select style="" class="form-select novedad" data-index="<?php echo e($j); ?>">
                                                 <option value="" selected>Sin Novedad</option>
                                                 <?php $__currentLoopData = $novedades; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $novedad): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                                                 <option value="<?php echo e($novedad->id_tipo_permiso); ?>"><?php echo e($novedad->permiso); ?></option>
@@ -172,6 +196,7 @@ $(document).ready(function() {
 
         // Enviar por AJAX
         $(`.btn-asignar[data-index='${index}']`).on('click', function() {
+            $('[data-index="' + index + '"]').filter('button').prop('disabled', true);
             let data = {
                 _token: '<?php echo e(csrf_token()); ?>',
                 id_empleado: $(`#id_empleado-${index}`).val(),
@@ -195,6 +220,7 @@ $(document).ready(function() {
                 success: function(response) {
                     if (response.success == false) {
                         alert('Ya existe un horario en alguna de las fechas o hay campos vacios');
+                        $('[data-index="' + index + '"]').filter('input, select, button').prop('disabled', false);
                     } else {
                         deshabilitarElementosPorDataIndex(index);
                         alert('Horario asignado correctamente');
