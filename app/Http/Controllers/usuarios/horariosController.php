@@ -183,26 +183,29 @@ class horariosController extends Controller
         }
 
         for ($i = 0; $i <= $intervalo; $i++) {
-            // Validar si algún campo está vacío
-            $campos = [
-                $request->input('fecha' . $i),
-                $request->input('entrada' . $i),
-                $request->input('salida' . $i),
-                $request->input('lunch' . $i),
-                $request->input('sede' . $i),
-            ];
 
-            foreach ($campos as $campo) {
-                if ($campo === null || $campo === '') {
-                    if ($request->ajax()) {
-                        return response()->json([
-                            'success' => false,
-                            'errores' => ['Faltan datos'],
-                            'creados' => $creados
-                        ], 200);
-                    } else {
-                        Session::flash('errores', ['Faltan datos']);
-                        return redirect()->route('horarios.index')->with('success', 'Faltan datos');
+            if ($request->input('novedad' . $i) == "") {
+                // Validar si algún campo está vacío
+                $campos = [
+                    $request->input('fecha' . $i),
+                    $request->input('entrada' . $i),
+                    $request->input('salida' . $i),
+                    $request->input('lunch' . $i),
+                    $request->input('sede' . $i),
+                ];
+
+                foreach ($campos as $campo) {
+                    if ($campo === null || $campo === '') {
+                        if ($request->ajax()) {
+                            return response()->json([
+                                'success' => false,
+                                'errores' => ['Faltan datos'],
+                                'creados' => $creados
+                            ], 200);
+                        } else {
+                            Session::flash('errores', ['Faltan datos']);
+                            return redirect()->route('horarios.index')->with('success', 'Faltan datos');
+                        }
                     }
                 }
             }
