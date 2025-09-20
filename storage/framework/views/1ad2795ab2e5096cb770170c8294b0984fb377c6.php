@@ -1,8 +1,8 @@
-@extends('layouts.layout')
 
-@section('title', 'SkaPeople - Horarios')
 
-@section('content')
+<?php $__env->startSection('title', 'SkaPeople - Horarios'); ?>
+
+<?php $__env->startSection('content'); ?>
 <!-- Titulo de pagina -->
 
 <head>
@@ -32,53 +32,54 @@
     <h1>Editar Horario</h1>
     <nav>
         <ol class="breadcrumb">
-            <li class="breadcrumb-item"><a href="{{ route('/') }}">Inicio</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('mis-permisos') }}">Horarios</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('nuevo-permiso') }}">Editar Horario</a></li>
+            <li class="breadcrumb-item"><a href="<?php echo e(route('/')); ?>">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="<?php echo e(route('mis-permisos')); ?>">Horarios</a></li>
+            <li class="breadcrumb-item"><a href="<?php echo e(route('nuevo-permiso')); ?>">Editar Horario</a></li>
         </ol>
     </nav>
 </div> <!-- Fin titulo de pagina -->
 
-@php $j = 0; $k = 0; @endphp
+<?php $j = 0; $k = 0; ?>
 <section class="section">
     <div class="row justify-content-center">
         <div class="col-lg-10 d-flex gap-4" style="width: 100%;">
-            @foreach ($id_empleado as $emp)
+            <?php $__currentLoopData = $id_empleado; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $emp): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
             <div class="card">
                 <div class="card-body ">
-                    {{-- QUITAMOS EL FORM --}}
+                    
                         <div class=" d-flex align-items-baseline justify-content-between mt-3">
-                            <h5 class="card-title">Horario para editar a <strong> {{$nombre_empleado[$j]->nombre}} {{$nombre_empleado[$j]->apellido}}</strong></h5>
+                            <h5 class="card-title">Horario para editar a <strong> <?php echo e($nombre_empleado[$j]->nombre); ?> <?php echo e($nombre_empleado[$j]->apellido); ?></strong></h5>
                             <div class="d-flex gap-2 align-items-baseline justify-content-end">
                                  <h6 class="card-title"><strong>Total a Trabajar:</strong></h6>
-                                <input name="totalFinal" class="form-control" style="width: 25%;" id="totalSumado-{{ $j }}" required readonly>
-                                <input type="hidden" id="intervalo-{{ $j }}" value="{{$intervalo->days}}" required>
-                                <input type="hidden" id="id_empleado-{{ $j }}" value="{{$nombre_empleado[$j]->id_empleado}}" required>
+                                <input name="totalFinal" class="form-control" style="width: 25%;" id="totalSumado-<?php echo e($j); ?>" required readonly>
+                                <input type="hidden" id="intervalo-<?php echo e($j); ?>" value="<?php echo e($intervalo->days); ?>" required>
+                                <input type="hidden" id="id_empleado-<?php echo e($j); ?>" value="<?php echo e($nombre_empleado[$j]->id_empleado); ?>" required>
                             </div>
                         </div>
                         <div class="col-sm-12 mb-4 d-flex justify-content-end">
-                            <button type="button" class="btn btn-primary btn-asignar" data-index="{{ $j }}">Actualizar</button>
+                            <button type="button" class="btn btn-primary btn-asignar" data-index="<?php echo e($j); ?>">Actualizar</button>
                         </div>
 
-                        @if ($errors->any())
+                        <?php if($errors->any()): ?>
                         <div class="alert alert-danger">
                             <ul>
-                                @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                                @endforeach
+                                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <li><?php echo e($error); ?></li>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </ul>
                         </div>
-                        @endif
+                        <?php endif; ?>
 
-                        @if (session('success'))
+                        <?php if(session('success')): ?>
                         <div class="alert alert-success">
-                            {{ session('success') }}
+                            <?php echo e(session('success')); ?>
+
                         </div>
-                        @endif
+                        <?php endif; ?>
 
                         <!-- Table with stripped rows -->
                         <div class="table-responsive">
-                            <table class="table table-bordered table-sm" id="tabla-horario-{{ $j }}">
+                            <table class="table table-bordered table-sm" id="tabla-horario-<?php echo e($j); ?>">
                                 <thead>
                                     <tr>
                                         <th class="text-center">Fecha</th>
@@ -91,44 +92,46 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @for($i = 0; $i <= $intervalo->days; $i++)
+                                    <?php for($i = 0; $i <= $intervalo->days; $i++): ?>
                                         <tr>
-                                            <td class="text-center">{{ \Carbon\Carbon::parse($horarios[$k]->fecha_h)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}</td>
-                                            <input type="hidden" class="fecha" data-index="{{ $j }}" value="{{ \Carbon\Carbon::parse($horarios[$k]->fecha_h)->toDateString()}}" required>
-                                            <td class="text-center"><input class="form-control hora1" type="time" data-index="{{ $j }}" value="{{ $horarios[$k]->entrada_h }}" required></td>
-                                            <td class="text-center"><input class="form-control hora2" type="time" data-index="{{ $j }}" value="{{ $horarios[$k]->salida_h }}" required></td>
-                                            <td class="text-center"><input class="form-control lunch" type="number" min="0" step="any" data-index="{{ $j }}" value="{{ $horarios[$k]->tiempo_fuera }}" required></td>
-                                            <td class="text-center"> <select style="width: auto;" id="sede" name="sede{{$i}}" class="form-select sede" aria-label="Default select example" data-index="{{ $j }} required {{$horarios[$k]->id_permiso == null || $horarios[$k]->id_permiso == 6 ? '' : 'disabled'}}>
-                                                    <option value="" {{ $horarios[$k]->id_sede == null ? 'selected' : '' }} disabled>Seleccionar</option>
-                                                    @foreach($sedes as $sede)
-                                                    <option value="{{ $sede->id_sede }}" {{ $horarios[$k]->id_sede == $sede->id_sede ? 'selected' : '' }}>
-                                                        {{ $sede->nombre }}
+                                            <td class="text-center"><?php echo e(\Carbon\Carbon::parse($horarios[$k]->fecha_h)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY')); ?></td>
+                                            <input type="hidden" class="fecha" data-index="<?php echo e($j); ?>" value="<?php echo e(\Carbon\Carbon::parse($horarios[$k]->fecha_h)->toDateString()); ?>" required>
+                                            <td class="text-center"><input class="form-control hora1" type="time" data-index="<?php echo e($j); ?>" value="<?php echo e($horarios[$k]->entrada_h); ?>" required></td>
+                                            <td class="text-center"><input class="form-control hora2" type="time" data-index="<?php echo e($j); ?>" value="<?php echo e($horarios[$k]->salida_h); ?>" required></td>
+                                            <td class="text-center"><input class="form-control lunch" type="number" min="0" step="any" data-index="<?php echo e($j); ?>" value="<?php echo e($horarios[$k]->tiempo_fuera); ?>" required></td>
+                                            <td class="text-center"> <select style="width: auto;" id="sede" name="sede<?php echo e($i); ?>" class="form-select sede" aria-label="Default select example" data-index="<?php echo e($j); ?> required <?php echo e($horarios[$k]->id_permiso == null || $horarios[$k]->id_permiso == 6 ? '' : 'disabled'); ?>>
+                                                    <option value="" <?php echo e($horarios[$k]->id_sede == null ? 'selected' : ''); ?> disabled>Seleccionar</option>
+                                                    <?php $__currentLoopData = $sedes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $sede): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($sede->id_sede); ?>" <?php echo e($horarios[$k]->id_sede == $sede->id_sede ? 'selected' : ''); ?>>
+                                                        <?php echo e($sede->nombre); ?>
+
                                                     </option>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </select></td>
-                                            <td class="text-center"><input class="form-control resultado" data-index="{{ $j }}" required readonly value="{{ $horarios[$k]->total }}"></td>
-                                            <td class="text-center"><select style="width: auto;" id="novedad" name="novedad{{$i}}" class="form-select" aria-label="Default select example" data-index="{{ $j }}">
-                                                    <option value="" {{ $horarios[$k]->id_permiso ? '' : 'selected' }}>Sin Novedad</option>
-                                                    @foreach($novedades as $novedad)
-                                                    <option value="{{ $novedad->id_tipo_permiso }}" {{ $horarios[$k]->id_permiso == $novedad->id_tipo_permiso ? 'selected' : '' }}>
-                                                        {{ $novedad->permiso }}
+                                            <td class="text-center"><input class="form-control resultado" data-index="<?php echo e($j); ?>" required readonly value="<?php echo e($horarios[$k]->total); ?>"></td>
+                                            <td class="text-center"><select style="width: auto;" id="novedad" name="novedad<?php echo e($i); ?>" class="form-select" aria-label="Default select example" data-index="<?php echo e($j); ?>">
+                                                    <option value="" <?php echo e($horarios[$k]->id_permiso ? '' : 'selected'); ?>>Sin Novedad</option>
+                                                    <?php $__currentLoopData = $novedades; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $novedad): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                                    <option value="<?php echo e($novedad->id_tipo_permiso); ?>" <?php echo e($horarios[$k]->id_permiso == $novedad->id_tipo_permiso ? 'selected' : ''); ?>>
+                                                        <?php echo e($novedad->permiso); ?>
+
                                                     </option>
-                                                    @endforeach
+                                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                                                 </select></td>
                                         </tr>
-                                        @php $k++; @endphp
-                                @endfor
+                                        <?php $k++; ?>
+                                <?php endfor; ?>
                                 </tbody>
                             </table>
                         </div>
                 </div>
             </div>
-            @php $j = $j + 1; @endphp
-            @endforeach
+            <?php $j = $j + 1; ?>
+            <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
         </div>
     </div>
 </section>
-{{-- SCRIPTS --}}
+
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
 $(document).ready(function() {
@@ -137,7 +140,7 @@ $(document).ready(function() {
     $('[data-index="' + index + '"]').filter('td').css('background-color', 'chartreuse');
     }
     // Para cada card
-    @foreach ($id_empleado as $emp)
+    <?php $__currentLoopData = $id_empleado; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $emp): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
     (function(index) {
         // Calcular suma total de la card
         function calcularSumaTotalCard() {
@@ -183,7 +186,7 @@ $(document).ready(function() {
         $(`.btn-asignar[data-index='${index}']`).on('click', function() {
             $('[data-index="' + index + '"]').filter('button').prop('disabled', true);
             let data = {
-                _token: '{{ csrf_token() }}',
+                _token: '<?php echo e(csrf_token()); ?>',
                 id_empleado: $(`#id_empleado-${index}`).val(),
                 totalFinal: $(`#totalSumado-${index}`).val(),
                 intervalo: $(`#intervalo-${index}`).val(),
@@ -199,7 +202,7 @@ $(document).ready(function() {
                 data[`novedad${i}`] = $(this).find('.novedad').val();
             });
             $.ajax({
-                url: '{{ route('horarios.actualizar') }}',
+                url: '<?php echo e(route('horarios.actualizar')); ?>',
                 method: 'POST',
                 data: data,
                 success: function(response) {
@@ -216,16 +219,16 @@ $(document).ready(function() {
                 }
             });
         });
-    })({{ $loop->index }});
-    @endforeach
+    })(<?php echo e($loop->index); ?>);
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 });
 </script>
 
-{{-- iniciaizando flatpickr--}}
+
 <script>
 $(document).ready(function() {
-    @foreach ($id_empleado as $emp)
-    $(`.hora1[data-index='{{ $loop->index }}']`).each(function() {
+    <?php $__currentLoopData = $id_empleado; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $emp): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+    $(`.hora1[data-index='<?php echo e($loop->index); ?>']`).each(function() {
         flatpickr(this, {
             enableTime: true,
             noCalendar: true,
@@ -233,7 +236,7 @@ $(document).ready(function() {
             time_24hr: false,
         });
     });
-    $(`.hora2[data-index='{{ $loop->index }}']`).each(function() {
+    $(`.hora2[data-index='<?php echo e($loop->index); ?>']`).each(function() {
         flatpickr(this, {
             enableTime: true,
             noCalendar: true,
@@ -241,7 +244,8 @@ $(document).ready(function() {
             time_24hr: false,
         });
     });
-    @endforeach
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 });
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.layout', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\people\resources\views/usuarios/editar-horario.blade.php ENDPATH**/ ?>

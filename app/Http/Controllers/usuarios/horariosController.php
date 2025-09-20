@@ -131,13 +131,13 @@ class horariosController extends Controller
             if ($metodo == 'Nuevo') {
                 return view('usuarios.asignar-horario', compact('id_empresa', 'id_empleado', 'fecha_inicio', 'intervalo', 'nombre_empleado', 'sedes', 'novedades'));
             } else {
-                $horarios = Horarios::where('id_empleado', $id_empleado)
+                $horarios = Horarios::whereIn('id_empleado', $id_empleado)
                     ->whereBetween('fecha_h', [$fecha_inicio, $fecha_fin])
                     ->get();
 
-                $intervalo = Horarios::where('id_empleado', $id_empleado)
-                    ->whereBetween('fecha_h', [$fecha_inicio, $fecha_fin])
-                    ->count();
+                // $intervalo = Horarios::where('id_empleado', $id_empleado)
+                //     ->whereBetween('fecha_h', [$fecha_inicio, $fecha_fin])
+                //     ->count();
 
                 return view('usuarios.editar-horario', compact('horarios', 'id_empresa', 'id_empleado', 'fecha_inicio', 'intervalo', 'nombre_empleado', 'sedes', 'novedades'));
             }
@@ -258,6 +258,8 @@ class horariosController extends Controller
 
     public function actualizar(Request $request)
     {
+        print_r(json_encode($request));die();
+
         if (isset(auth('g_usuarios')->user()->id_empleado)) {
             $id_empleado2 = auth('g_usuarios')->user()->id_empleado;
         }
