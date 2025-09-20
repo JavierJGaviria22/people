@@ -120,7 +120,7 @@ class horariosController extends Controller
 
         $id_empresa = $id_empresa;
         $id_empleado = $request->input('empleado');
-        $nombre_empleado = Empleados::whereIn('id_empleado', $id_empleado)->get();
+        $nombre_empleado = Empleados::whereIn('id_empleado', $id_empleado)->orderBy('id_empleado', 'asc')->get();
         $fecha_inicio = Carbon::parse($request->input('fecha_inicio'));
         $intervalo = $fecha_fin->diff($fecha_inicio);
         $metodo = $request->input('accion');
@@ -133,13 +133,18 @@ class horariosController extends Controller
             } else {
                 $horarios = Horarios::whereIn('id_empleado', $id_empleado)
                     ->whereBetween('fecha_h', [$fecha_inicio, $fecha_fin])
+                    ->orderBy('id_empleado', 'asc')
                     ->get();
 
+                if (($intervalo->days + 1) * count($id_empleado) == count($horarios)) {
+                    return view('usuarios.editar-horario', compact('horarios', 'id_empresa', 'id_empleado', 'fecha_inicio', 'intervalo', 'nombre_empleado', 'sedes', 'novedades'));
+                } else {
+                    Session::flash('errores', ['Falta crear uno o más horarios en el rango de fechas']);
+                    return redirect()->route('horarios.editar')->withInput();
+                }
                 // $intervalo = Horarios::where('id_empleado', $id_empleado)
                 //     ->whereBetween('fecha_h', [$fecha_inicio, $fecha_fin])
                 //     ->count();
-
-                return view('usuarios.editar-horario', compact('horarios', 'id_empresa', 'id_empleado', 'fecha_inicio', 'intervalo', 'nombre_empleado', 'sedes', 'novedades'));
             }
         } else {
             if ($metodo == 'Nuevo') {
@@ -258,28 +263,68 @@ class horariosController extends Controller
 
     public function actualizar(Request $request)
     {
-        print_r(json_encode($request));die();
-
         if (isset(auth('g_usuarios')->user()->id_empleado)) {
             $id_empleado2 = auth('g_usuarios')->user()->id_empleado;
+            $id_empresa = auth('g_usuarios')->user()->empleado->administradores->id_empresa;
         }
         if (isset(auth('g_administradores')->user()->id_empresa)) {
             $id_empleado2 = null;
+            $id_empresa = auth('g_administradores')->user()->id_empresa;
         }
 
-        for ($i = 0; $i <= $request->input('intervalo') - 1; $i++) {
+        $errores = [];
+        $editados = 0;
+
+        $intervalo = $request->input('intervalo');
+        if ($intervalo === null) {
+            // fallback para compatibilidad
+            $intervalo = 0;
+            while ($request->has('fecha' . $intervalo)) {
+                $intervalo++;
+            }
+            $intervalo--;
+        }
+
+        for ($i = 0; $i <= $intervalo; $i++) {
 
             $horario = Horarios::where('id_empleado', $request->input('id_empleado'))
                 ->where('fecha_h', $request->input('fecha' . $i))
                 ->first();
 
-            $horario->entrada_h = $request->input('entrada' . $i);
-            $horario->salida_h = $request->input('salida' . $i);
-            $horario->tiempo_fuera = $request->input('lunch' . $i);
-            $horario->id_sede = $request->input('sede' . $i);
-            $horario->id_permiso = $request->input('novedad' . $i);
-            $horario->actualizado_por = $id_empleado2;
-            $horario->save();
+            if ($horario == null) {
+                $errores[] = 'No existe un horario en esta fecha: ' . Carbon::parse($request->input('fecha' . $i))->format('Y-m-d');
+                continue;
+            }
+ 
+            $editarHorario = Horarios::where('id_horario', $horario->id_horario)->first();
+            $editarHorario->fecha_h = $request->input('fecha' . $i);
+            $editarHorario->entrada_h = $request->input('entrada' . $i);
+            $editarHorario->salida_h = $request->input('salida' . $i);
+            $editarHorario->tiempo_fuera = $request->input('lunch' . $i);
+            $editarHorario->id_sede = $request->input('sede' . $i);
+            $editarHorario->id_permiso = $request->input('novedad' . $i);
+            $editarHorario->actualizado_por = $id_empleado2;
+            $editarHorario->save();
+            $editados++;
+        }
+
+        if ($request->ajax()) {
+            if ($errores) {
+                return response()->json([
+                    'success' => false,
+                    'errores' => $errores,
+                    'creados' => $editados
+                ], 200);
+            }
+            return response()->json([
+                'success' => true,
+                'message' => 'Horario editado correctamente',
+                'creados' => $editados
+            ], 200);
+        }
+
+        if ($errores) {
+            Session::flash('errores', $errores);
         }
 
         return redirect()->route('horarios.index')->with('success', 'Horario editado correctamente');

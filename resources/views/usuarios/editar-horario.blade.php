@@ -70,9 +70,13 @@
                         </div>
                         @endif
 
-                        @if (session('success'))
-                        <div class="alert alert-success">
-                            {{ session('success') }}
+                        @if (session('errores'))
+                        <div class="alert alert-danger">
+                            <ul>
+                                @foreach (session('errores') as $error)
+                                <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
                         </div>
                         @endif
 
@@ -93,12 +97,12 @@
                                 <tbody>
                                     @for($i = 0; $i <= $intervalo->days; $i++)
                                         <tr>
-                                            <td class="text-center">{{ \Carbon\Carbon::parse($horarios[$k]->fecha_h)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}</td>
+                                            <td class="text-center" data-index="{{ $j }}">{{ \Carbon\Carbon::parse($horarios[$k]->fecha_h)->locale('es')->isoFormat('dddd, D [de] MMMM [de] YYYY') }}</td>
                                             <input type="hidden" class="fecha" data-index="{{ $j }}" value="{{ \Carbon\Carbon::parse($horarios[$k]->fecha_h)->toDateString()}}" required>
                                             <td class="text-center"><input class="form-control hora1" type="time" data-index="{{ $j }}" value="{{ $horarios[$k]->entrada_h }}" required></td>
                                             <td class="text-center"><input class="form-control hora2" type="time" data-index="{{ $j }}" value="{{ $horarios[$k]->salida_h }}" required></td>
                                             <td class="text-center"><input class="form-control lunch" type="number" min="0" step="any" data-index="{{ $j }}" value="{{ $horarios[$k]->tiempo_fuera }}" required></td>
-                                            <td class="text-center"> <select style="width: auto;" id="sede" name="sede{{$i}}" class="form-select sede" aria-label="Default select example" data-index="{{ $j }} required {{$horarios[$k]->id_permiso == null || $horarios[$k]->id_permiso == 6 ? '' : 'disabled'}}>
+                                            <td class="text-center"> <select style="width: auto;" id="sede" name="sede{{$i}}" class="form-select sede" aria-label="Default select example" data-index="{{ $j }}" required {{$horarios[$k]->id_permiso == null || $horarios[$k]->id_permiso == 6 ? '' : 'disabled'}}>
                                                     <option value="" {{ $horarios[$k]->id_sede == null ? 'selected' : '' }} disabled>Seleccionar</option>
                                                     @foreach($sedes as $sede)
                                                     <option value="{{ $sede->id_sede }}" {{ $horarios[$k]->id_sede == $sede->id_sede ? 'selected' : '' }}>
@@ -107,7 +111,8 @@
                                                     @endforeach
                                                 </select></td>
                                             <td class="text-center"><input class="form-control resultado" data-index="{{ $j }}" required readonly value="{{ $horarios[$k]->total }}"></td>
-                                            <td class="text-center"><select style="width: auto;" id="novedad" name="novedad{{$i}}" class="form-select" aria-label="Default select example" data-index="{{ $j }}">
+                                            <td class="text-center">
+                                                <select style="" class="form-select novedad" data-index="{{ $j }}">
                                                     <option value="" {{ $horarios[$k]->id_permiso ? '' : 'selected' }}>Sin Novedad</option>
                                                     @foreach($novedades as $novedad)
                                                     <option value="{{ $novedad->id_tipo_permiso }}" {{ $horarios[$k]->id_permiso == $novedad->id_tipo_permiso ? 'selected' : '' }}>
@@ -133,7 +138,7 @@
 <script>
 $(document).ready(function() {
     function deshabilitarElementosPorDataIndex(index) {
-    $('[data-index="' + index + '"]').filter('input, select, button').prop('disabled', true);
+    // $('[data-index="' + index + '"]').filter('input, select, button').prop('disabled', true);
     $('[data-index="' + index + '"]').filter('td').css('background-color', 'chartreuse');
     }
     // Para cada card
@@ -208,7 +213,8 @@ $(document).ready(function() {
                         $('[data-index="' + index + '"]').filter('input, select, button').prop('disabled', false);
                     } else {
                         deshabilitarElementosPorDataIndex(index);
-                        alert('Horario asignado correctamente');
+                        alert('Horario editado correctamente');
+                        $('[data-index="' + index + '"]').filter('button').prop('disabled', false);
                     }
                 },
                 error: function(xhr) {

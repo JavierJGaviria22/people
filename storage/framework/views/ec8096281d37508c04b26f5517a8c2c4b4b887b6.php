@@ -23,20 +23,23 @@
                         <h5 class="card-title">Seleccion de empleado y rango de fechas</h5>
 
                         <?php if($errors->any()): ?>
-                            <div class="alert alert-danger">
-                                <ul>
-                                    <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                                        <li><?php echo e($error); ?></li>
-                                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                                </ul>
-                            </div>
+                        <div class="alert alert-danger">
+                            
+                                <?php $__currentLoopData = $errors->all(); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <p><?php echo e($error); ?></p>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                           
+                        </div>
                         <?php endif; ?>
 
-                        <?php if(session('success')): ?>
-                            <div class="alert alert-success">
-                                <?php echo e(session('success')); ?>
-
-                            </div>
+                        <?php if(session('errores')): ?>
+                        <div class="alert alert-danger">
+                           
+                                <?php $__currentLoopData = session('errores'); $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $error): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <p style="margin: 0"><?php echo e($error); ?></p>
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                            
+                        </div>
                         <?php endif; ?>
 
                         <!-- General Form Elements -->

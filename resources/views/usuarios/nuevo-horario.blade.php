@@ -23,19 +23,23 @@
                         <h5 class="card-title">Seleccion de empleado y rango de fechas</h5>
 
                         @if ($errors->any())
-                            <div class="alert alert-danger">
-                                <ul>
-                                    @foreach ($errors->all() as $error)
-                                        <li>{{ $error }}</li>
-                                    @endforeach
-                                </ul>
-                            </div>
+                        <div class="alert alert-danger">
+                            
+                                @foreach ($errors->all() as $error)
+                                <p>{{ $error }}</p>
+                                @endforeach
+                           
+                        </div>
                         @endif
 
-                        @if (session('success'))
-                            <div class="alert alert-success">
-                                {{ session('success') }}
-                            </div>
+                        @if (session('errores'))
+                        <div class="alert alert-danger">
+                           
+                                @foreach (session('errores') as $error)
+                                <p style="margin: 0">{{ $error }}</p>
+                                @endforeach
+                            
+                        </div>
                         @endif
 
                         <!-- General Form Elements -->
