@@ -150,15 +150,17 @@ class horariosController extends Controller
             if ($metodo == 'Nuevo') {
                 return view('admin.asignar-horario', compact('id_empresa', 'id_empleado', 'fecha_inicio', 'intervalo', 'nombre_empleado', 'sedes', 'novedades'));
             } else {
-                $horarios = Horarios::where('id_empleado', $id_empleado)
+                $horarios = Horarios::whereIn('id_empleado', $id_empleado)
                     ->whereBetween('fecha_h', [$fecha_inicio, $fecha_fin])
+                    ->orderBy('id_empleado', 'asc')
                     ->get();
 
-                $intervalo = Horarios::where('id_empleado', $id_empleado)
-                    ->whereBetween('fecha_h', [$fecha_inicio, $fecha_fin])
-                    ->count();
-
-                return view('admin.editar-horario', compact('horarios', 'id_empresa', 'id_empleado', 'fecha_inicio', 'intervalo', 'nombre_empleado', 'sedes', 'novedades'));
+                if (($intervalo->days + 1) * count($id_empleado) == count($horarios)) {
+                    return view('admin.editar-horario', compact('horarios', 'id_empresa', 'id_empleado', 'fecha_inicio', 'intervalo', 'nombre_empleado', 'sedes', 'novedades'));
+                } else {
+                    Session::flash('errores', ['Falta crear uno o más horarios en el rango de fechas']);
+                    return redirect()->route('horarios.editar')->withInput();
+                }
             }
         }
     }
